@@ -8,6 +8,10 @@
   --background-end-rgb: 255, 255, 255;
 }
 
+.tw-nav-items {
+  @apply hover:bg-gray-300 px-3 cursor-pointer hover:text-black hover:duration-200
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
