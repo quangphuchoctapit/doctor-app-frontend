@@ -2,6 +2,7 @@
 import React from 'react'
 import { CgMediaLive } from "react-icons/cg";
 import { useRouter } from 'next/navigation';
+import { FaStar } from "react-icons/fa";
 
 
 interface ICategoriesCollectionProps {
@@ -29,6 +30,9 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
         else if (topic === 'Featured Doctors') {
             size = "min-w-48 p-2 h-48 rounded-lg overflow-hidden relative border shadow-lg flex flex-col flex justify-center"
         }
+        else if (topic === 'Medicine Order') {
+            size = "min-w-36 h-36 rounded-lg overflow-hidden relative border shadow-lg flex flex-col"
+        }
         return size
     }
 
@@ -46,12 +50,19 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
         else if (topic === 'Featured Doctors') {
             size = " h-[60%] w-[60%] mx-auto"
         }
+        else if (topic === 'Medicine Order') {
+            size = "p-3 h-[60%]"
+        }
         return size
     }
 
     const handleRedirect = () => {
         if (topic === 'Featured Doctors' || topic === 'Popular Doctors') {
             router.push('/doctor/3')
+            return
+        }
+        if (topic === 'Medicine Order') {
+            router.push('/medicine/3')
             return
         }
         else {
@@ -65,6 +76,11 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
                 <h3 className='text-xl font-bold'>{topic}</h3>
                 <div className="text-gray-400">See All</div>
             </div>
+            {topic === 'Medicine Order' &&
+                <div className='w-full'>
+                    <input className='px-4 py-2 bg-white border border-gray-400 outline-none w-full rounded-md' type="text" placeholder='Search ' />
+                </div>
+            }
             <div className="overflow-x-auto flex gap-3 items-center">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
                     <div
@@ -74,8 +90,8 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
                     >
                         {topic === 'Featured Doctors' ?
                             (<div className="flex items-center mx-2 justify-between">
-                                <div className="">heart</div>
-                                <div className="">S <span className='font-bold'>3.7</span></div>
+                                <div className="text-gray-400">heart</div>
+                                <div className="flex gap-1 items-center"><FaStar className='text-yellow-400' size={15} /> <span className='font-bold'>3.7</span></div>
                             </div>) : null
                         }
                         {data?.isLive &&
@@ -100,6 +116,14 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
                             <div className="flex flex-col items-center ">
                                 <div className="text-lg font-bold">Dr Kick</div>
                                 <div className="text-md text-gray-500"><span className='text-green-500'>$</span>25.00/hour</div>
+                            </div>
+                        }
+
+                        {/* Medicine Order */}
+                        {topic === 'Medicine Order' &&
+                            <div className="flex flex-col items-center ">
+                                <div className="whitespace-nowrap text-sm font-bold ">Optical Supplement</div>
+                                <div className="text-sm text-gray-500"><span className='text-green-500'>$</span>25.00/serving</div>
                             </div>
                         }
                     </div>

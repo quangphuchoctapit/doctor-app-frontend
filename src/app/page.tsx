@@ -9,9 +9,6 @@ const Home = () => {
   return (
     <div className='w-full bg-white text-black'>
 
-      {/* nav */}
-      <NavBar />
-
       {/* home */}
       <div className="w-full px-3 container mx-auto border-blue-200 border min-h-screen">
         <div className="flex flex-col gap-5">
@@ -19,7 +16,7 @@ const Home = () => {
           {/* top home */}
           <div className="flex justify-between mt-5">
             <div className="flex flex-col justify-center items-center gap-3">
-              <div className="p-2 rounded ">139 Nguyen Cong Tru, Bao Loc</div>
+              <div className="p-2 rounded ">87B Nguyen Cong Tru, Bao Loc</div>
             </div>
             <div className=" w-12 h-12 flex items-center rounded border justify-center "><FaRegBell /></div>
           </div>
@@ -27,17 +24,21 @@ const Home = () => {
           {/* live doctors */}
           <div className="my-5">
             <CategoriesCollection topic='Live Doctors' data={{ id: 1, image: `/doctor/livestreaming/doctor7.jpg`, isLive: true }} />
+            <br />
             <CategoriesCollection topic='Specialties' />
+            <br />
             <CategoriesCollection topic='Popular Doctors' data={{ id: 1, image: `/doctor/livestreaming/doctor7.jpg`, isLive: false }} />
+            <br />
             <CategoriesCollection topic='Featured Doctors' data={{ id: 1, image: `/doctor/livestreaming/doctor7.jpg`, isLive: false }} />
+            <br />
+
+            {/* medicine order */}
+            <CategoriesCollection topic='Medicine Order' data={{ id: 1, image: `/medicine/eye-medicine.jpg`, isLive: false }} />
 
           </div>
 
         </div>
       </div>
-
-      {/* footer */}
-      <Footer />
     </div>
   )
 }

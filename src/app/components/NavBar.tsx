@@ -1,25 +1,64 @@
-import Link from 'next/link'
-import React from 'react'
+'use client'
+import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 
 const NavBar = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [isOpenDropdownUser, setIsOpenDropdownUser] = useState(false)
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const toggleDropdownUser = () => {
+        setIsOpenDropdownUser(!isOpenDropdownUser);
+
+    }
+
+    useEffect(() => {
+        setIsOpen(false);
+    }, [window.location.href])
+
     return (
-        <header className="w-full bg-black text-white">
-            <div className="container mx-auto flex justify-between items-center">
-                <div className="flex items-center gap-3 w-full overflow-hidden">
-                    <div className="block hover:bg-gray-300 h-full px-3 py-4 cursor-pointer hover:text-black hover:duration-200">Home</div>
-                    <div className="hidden sm:block hover:bg-gray-300 h-full py-4 px-3 cursor-pointer hover:text-black hover:duration-200">Admin</div>
-                    <div className="hidden sm:block whitespace-nowrap hover:bg-gray-300 h-full py-4 px-3 cursor-pointer hover:text-black hover:duration-200">All Doctors</div>
-                    <div className="hidden sm:block whitespace-nowrap hover:bg-gray-300 h-full py-4 px-3 cursor-pointer hover:text-black hover:duration-200">My Appointments</div>
+        <nav className="bg-gray-800">
+            <div className="flex justify-between items-center container mx-auto">
+                <div className="flex items-center">
+                    <Link href="/" className="text-white mr-4 hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Home</Link>
+                    <Link href="#" className="text-white mr-4 hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Doctors</Link>
+                    <div className="relative">
+                        <button className="text-white" onClick={toggleDropdown}>
+                            Admin
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 inline-block ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 16a1 1 0 0 1-.707-.293l-6-6a1 1 0 0 1 1.414-1.414L10 13.586l5.293-5.293a1 1 0 0 1 1.414 1.414l-6 6A1 1 0 0 1 10 16z" clipRule="evenodd" />
+                            </svg>
+                        </button>
+                        {isOpen && (
+                            <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
+                                <Link href="/admin/users" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Users</Link>
+                                <Link href="/admin/doctors" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Doctors</Link>
+                                <Link href="/admin/clinics" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Clinics</Link>
+                                <Link href="/admin/medicines" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Medicines</Link>
+                                <Link href="/admin/specialties" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Specialties</Link>
+                            </div>
+                        )}
+                    </div>
                 </div>
-
-                <div className="hidden lg:block w-full ml-10 md:ml-20">
-                    <input type="text" placeholder='Search...' className='bg-white text-black px-4 py-2 outline-none rounded border' />
+                <div className="">
+                    <div onClick={toggleDropdownUser} className="w-12 h-12 border rounded-full relative">
+                        {isOpenDropdownUser && (
+                            <div className="absolute top-full z-10 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
+                                <Link href="/admin/users" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</Link>
+                                <Link href="/admin/medicines" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Appointment</Link>
+                                <Link href="/admin/doctors" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Orders</Link>
+                                <Link href="/admin/clinics" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Balance</Link>
+                                <Link href="/login" className="block px-4 py-2 text-red-800 hover:bg-gray-700 hover:text-red-300 font-bold">Log Out</Link>
+                            </div>
+                        )}
+                    </div>
                 </div>
-                <Link href='/login' className="px-3">Logout</Link>
             </div>
-        </header>
+        </nav>
+    );
+};
 
-    )
-}
-
-export default NavBar
+export default NavBar;

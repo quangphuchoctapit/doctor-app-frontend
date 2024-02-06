@@ -1,9 +1,10 @@
+import Link from 'next/link';
 import React from 'react'
 import { FaHeart } from "react-icons/fa";
 const DoctorDetail = () => {
     return (
         <div className='bg-gradient-to-br from-blue-200 via-white to-green-200 w-full'>
-            <div className="flex flex-col gap-5 mx-5 py-5">
+            <div className="flex flex-col gap-5 mx-5 py-5 container mx-auto">
 
                 {/* intro */}
                 <div className="shadow-lg border rounded-lg bg-white p-3 flex flex-col">
@@ -24,7 +25,7 @@ const DoctorDetail = () => {
                         </div>
                     </div>
                     <div className="w-full flex items-center justify-center mt-3">
-                        <button className='w-full rounded-sm py-2 bg-green-600 text-white text-lg'>Book now</button>
+                        <Link href='/appointment/3' className='w-full text-center rounded-sm py-2 bg-green-600 text-white text-lg'>Book now</Link>
                     </div>
                 </div>
 
@@ -47,7 +48,7 @@ const DoctorDetail = () => {
                     </div>
                 </div>
 
-                {/* Services */}
+                {/* Services & Location*/}
                 <div className="w-full flex flex-col gap-3 text-black">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div className="">
