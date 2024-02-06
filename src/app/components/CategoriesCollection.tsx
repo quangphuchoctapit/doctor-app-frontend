@@ -1,5 +1,8 @@
 'use client'
 import React from 'react'
+import { CgMediaLive } from "react-icons/cg";
+import { useRouter } from 'next/navigation';
+
 
 interface ICategoriesCollectionProps {
     topic: string
@@ -11,6 +14,7 @@ interface ICategoriesCollectionProps {
 }
 
 const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
+    let router = useRouter()
     const sizeCards = () => {
         let size = ''
         if (topic === 'Live Doctors') {
@@ -45,6 +49,16 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
         return size
     }
 
+    const handleRedirect = () => {
+        if (topic === 'Featured Doctors' || topic === 'Popular Doctors') {
+            router.push('/doctor/3')
+            return
+        }
+        else {
+            return
+        }
+    }
+
     return (
         <div className="flex flex-col gap-3 mt-3">
             <div className="flex justify-between items-center">
@@ -55,6 +69,7 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
                     <div
                         key={index}
+                        onClick={() => handleRedirect()}
                         className={sizeCards()}
                     >
                         {topic === 'Featured Doctors' ?
@@ -64,7 +79,7 @@ const CategoriesCollection = ({ topic, data }: ICategoriesCollectionProps) => {
                             </div>) : null
                         }
                         {data?.isLive &&
-                            <div className="absolute top-2 right-2 rounded-lg bg-red-500 px-2 text-white">o Live</div>
+                            <div className="absolute top-2 right-2 rounded-lg bg-red-500 px-2 text-white whitespace-nowrap flex items-center gap-1"><span className='text-white'><CgMediaLive size={10} /></span> Live</div>
                         }
                         <div className={sizeImgCards()}>
                             <img src={data?.image} alt={topic} className={topic === 'Featured Doctors' ? "w-full h-full object-cover rounded-full " : "w-full h-full object-cover"}></img>

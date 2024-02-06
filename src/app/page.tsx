@@ -3,6 +3,7 @@ import React from 'react'
 import NavBar from './components/NavBar'
 import CategoriesCollection from './components/CategoriesCollection'
 import Footer from './components/Footer'
+import { FaRegBell } from "react-icons/fa";
 
 const Home = () => {
   return (
@@ -16,11 +17,11 @@ const Home = () => {
         <div className="flex flex-col gap-5">
 
           {/* top home */}
-          <div className="flex justify-between">
+          <div className="flex justify-between mt-5">
             <div className="flex flex-col justify-center items-center gap-3">
-              <div className="">Location</div>
+              <div className="p-2 rounded ">139 Nguyen Cong Tru, Bao Loc</div>
             </div>
-            <div className="flex  justify-center ">bell</div>
+            <div className=" w-12 h-12 flex items-center rounded border justify-center "><FaRegBell /></div>
           </div>
 
           {/* live doctors */}
