@@ -44,9 +44,9 @@ const NavBar = () => {
                     </div>
                 </div>
                 <div className="">
-                    <div onClick={toggleDropdownUser} className="w-12 h-12 border rounded-full relative">
+                    <div onClick={toggleDropdownUser} className="w-12 right-0 h-12 border rounded-full relative">
                         {isOpenDropdownUser && (
-                            <div className="absolute top-full z-10 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
+                            <div className="absolute top-full z-10 right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
                                 <Link href="/admin/users" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</Link>
                                 <Link href="/admin/medicines" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Appointment</Link>
                                 <Link href="/admin/doctors" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Orders</Link>

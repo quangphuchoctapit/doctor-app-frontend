@@ -4,7 +4,7 @@ import { FaHeart } from "react-icons/fa";
 const DoctorDetail = () => {
     return (
         <div className='bg-gradient-to-br from-blue-200 via-white to-green-200 w-full'>
-            <div className="flex flex-col gap-5 mx-5 py-5 container mx-auto">
+            <div className="flex flex-col gap-5 max-sm:mx-5 py-5 container mx-auto">
 
                 {/* intro */}
                 <div className="shadow-lg border rounded-lg bg-white p-3 flex flex-col">
