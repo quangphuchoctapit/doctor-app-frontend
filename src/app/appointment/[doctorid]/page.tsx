@@ -6,7 +6,7 @@ import { FaHeart } from "react-icons/fa";
 const Appointment = () => {
     return (
         <div className='bg-gradient-to-br from-blue-200 via-white to-green-200 w-full'>
-            <div className="flex flex-col gap-5 max-sm:mx-5 mx-auto container py-5">
+            <div className="flex flex-col gap-5 mx-auto container py-5">
                 {/* intro */}
                 <div className="shadow-lg border rounded-lg bg-white p-3 flex flex-col">
                     <div className="grid grid-cols-3 gap-3 text-black">
@@ -21,7 +21,7 @@ const Appointment = () => {
                             </div>
                             <div className="flex flex-col justify-between items-end">
                                 <div className="max-sm:text-sm text-red-400"><FaHeart /></div>
-                                <div className="max-sm:text-sm"><span className='text-green-500'>${' '}</span>2212/hour</div>
+                                <div className="max-sm:text-xs flex items-center gap-1"><span className='text-green-500'>${' '}</span>2212/hour</div>
                             </div>
                         </div>
                     </div>
