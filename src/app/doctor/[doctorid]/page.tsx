@@ -19,8 +19,8 @@ const DoctorDetail = () => {
                                 <div className="max-sm:text-sm">1 2 3 4 5</div>
                             </div>
                             <div className="flex flex-col justify-between items-end">
-                                <div className="max-sm:text-sm text-red-400"><FaHeart /></div>
-                                <div className="max-sm:text-sm"><span className='text-green-500'>${' '}</span>2212/hour</div>
+                                <div className="max-sm:text-xs text-red-400"><FaHeart /></div>
+                                <div className="max-sm:text-xs flex items-center gap-1"><span className='text-green-500'>${' '}</span>2212/hour</div>
                             </div>
                         </div>
                     </div>

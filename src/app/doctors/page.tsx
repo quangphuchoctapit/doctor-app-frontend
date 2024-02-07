@@ -42,7 +42,7 @@ const DoctorsPage = () => {
                                 <h5 className='text-green-500'>Next Available</h5>
                                 <p><span className='font-semibold'>10:00</span> AM tomorrow</p>
                             </div>
-                            <div className="">
+                            <div className="w-full">
                                 <Link href='/doctor/3' className='bg-green-600 text-white rounded-lg px-3 py-2'>Book Now</Link>
                             </div>
                         </div>
