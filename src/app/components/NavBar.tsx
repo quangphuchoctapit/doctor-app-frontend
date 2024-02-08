@@ -42,6 +42,8 @@ const NavBar = () => {
                             </div>
                         )}
                     </div>
+                    <Link href="/doctor-services" className="text-white mr-4 hidden sm:block hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Doctor</Link>
+
                 </div>
                 <div className="">
                     <div onClick={toggleDropdownUser} className="w-12 right-0 h-12 border rounded-full relative">

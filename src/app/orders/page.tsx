@@ -1,10 +1,10 @@
 'use client'
+import Link from 'next/link';
 import React from 'react'
 
 const OrderPage = () => {
     const doctorData = [
         { id: 1, name: 'Doctor 1', price: 20, status: 'Pending' },
-        { id: 2, name: 'Doctor 2', price: 10, status: 'Processing' },
         { id: 3, name: 'Doctor 3', price: 50, status: 'Confirmed' },
         { id: 4, name: 'Doctor 4', price: 30, status: 'Cancelled' },
         { id: 5, name: 'Doctor 5', price: 32, status: 'Rescheduled' },
@@ -35,7 +35,7 @@ const OrderPage = () => {
         <div className='w-full min-h-screen bg-gradient-to-tr from-blue-200 via-white to-green-200'>
             <div className="container mx-auto flex flex-col items-center text-black">
                 <div className="grid xl:grid-cols-2 gap-5 my-5">
-                    <div className="bg-white border rounded-md shadow-xl p-3">
+                    <div className="bg-white border rounded-md shadow-xl p-3 overflow-x-scroll">
                         <h1 className='text-lg mb-5 font-bold'>Appointment Orders</h1>
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
@@ -52,7 +52,9 @@ const OrderPage = () => {
                                 {doctorData.map((item) => (
                                     <tr key={item.id}>
                                         <td className="px-6 py-4 whitespace-nowrap">{item.id}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <Link href='/doctor/3'>{item.name}</Link>
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap">{item.status}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="relative">
@@ -77,7 +79,7 @@ const OrderPage = () => {
                             </tbody>
                         </table>
                     </div>
-                    <div className="bg-white border rounded-md shadow-xl p-3">
+                    <div className="bg-white border rounded-md shadow-xl p-3 overflow-x-scroll">
                         <h1 className='text-lg mb-5 font-bold'>Medicine Orders</h1>
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
@@ -95,7 +97,9 @@ const OrderPage = () => {
                                 {medicineData.map((item) => (
                                     <tr key={item.id}>
                                         <td className="px-6 py-4 whitespace-nowrap">{item.id}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <Link href='/medicine/3'>{item.name}</Link>
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap">{item.status}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="relative">

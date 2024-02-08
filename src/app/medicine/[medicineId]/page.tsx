@@ -39,8 +39,8 @@ const MedicinePage = () => {
                             <span>Available</span>
                             <span>ID: 13088</span>
                         </div>
-                        <div className="bg-white shadow-lg border p-3 flex justify-between items-center">
-                            <span className='text-red-400 text-lg font-bold flex items-center'>$ 0.5/<span>pack</span></span>
+                        <div className="bg-white shadow-lg border p-3 flex justify-between items-center max-sm:gap-2">
+                            <span className='text-red-400 max-sm:text-base text-lg font-bold flex items-center'>$ <span>0.5</span>/<span>pack</span></span>
                             <button className='px-3 py-2 rounded-md bg-green-600 text-white'>Add Medicine to Cart</button>
                         </div>
                         <p className='text-sm'>Contact Medicine Specialist for more information: <span className='text-blue-600'>1900 1222</span> (<span>$1</span>/<span>min</span>)</p>
@@ -124,7 +124,7 @@ const MedicinePage = () => {
                                 </div>
                                 <div className="flex flex-col py-2">
                                     <p className='text-sm'>Hỗn dịch uống A.T Sucralfate 1000mg trị loét dạ dày, tá tràng</p>
-                                    <p><span className='text-red-400 font-semibold'>$20</span>/<span>box</span></p>
+                                    <p className=''><span className='text-red-400 max-sm:text-xs font-semibold'>$20</span>/<span>box</span></p>
                                     <button className='w-full bg-green-700 px-3 rounded-md text-white py-2'>Add to Medicine Cart</button>
                                 </div>
                             </div>
