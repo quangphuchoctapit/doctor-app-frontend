@@ -1,8 +1,20 @@
 'use client'
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../redux/Store'
+
 
 const NavBar = () => {
+    const userRedux = useSelector((state: RootState) => state.user.value)
+
+    const [userImg, setUserImg] = useState('')
+    const [username, setUsername] = useState('')
+
+    useEffect(() => {
+        setUserImg(userRedux.image)
+        setUsername(userRedux.username)
+    }, [userRedux])
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDropdownUser, setIsOpenDropdownUser] = useState(false)
 
@@ -12,12 +24,7 @@ const NavBar = () => {
 
     const toggleDropdownUser = () => {
         setIsOpenDropdownUser(!isOpenDropdownUser);
-
     }
-
-    useEffect(() => {
-        setIsOpen(false);
-    }, [window.location.href])
 
     return (
         <nav className="bg-gray-800">
@@ -45,8 +52,12 @@ const NavBar = () => {
                     <Link href="/doctor-services" className="text-white mr-4 hidden sm:block hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Doctor</Link>
 
                 </div>
+                {username &&
+                    <div className='text-white'>{username}</div>
+                }
                 <div className="">
                     <div onClick={toggleDropdownUser} className="w-12 right-0 h-12 border rounded-full relative">
+                        <img src={userImg} alt={username} className='w-full h-full rounded-full object-cover' />
                         {isOpenDropdownUser && (
                             <div className="absolute top-full z-10 right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
                                 <Link href="/profile/3" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</Link>

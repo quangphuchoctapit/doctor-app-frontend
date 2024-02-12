@@ -51,14 +51,14 @@ const DoctorServices = () => {
                         <div className="w-full flex flex-col gap-2 ">
                             <label className='text-lg font-semibold' htmlFor="description">Services</label>
                             <div className="flex items-center justify-between p-3 border">
-                                <textarea name="" id="description" value='doctor services abcabcabcabc'></textarea>
+                                <textarea name="" id="description" value='doctor services abcabcabcabc' onChange={() => { }}></textarea>
                                 <div className="">Edit</div>
                             </div>
                         </div>
                         <div className="w-full flex flex-col gap-2 ">
                             <label className='text-lg font-semibold' htmlFor="description">Description</label>
                             <div className="flex items-center justify-between p-3 border">
-                                <textarea name="" id="description" value='doctor description abcabcabcabc'></textarea>
+                                <textarea name="" id="description" value='doctor description abcabcabcabc' onChange={() => { }}></textarea>
                                 <div className="">Edit</div>
                             </div>
                         </div>
@@ -139,7 +139,7 @@ const DoctorServices = () => {
                                         <div className="w-full flex justify-center">
                                         </div>
                                         <div className="w-full">
-                                            <textarea className='w-full lg:min-w-[700px] sm:min-w-[500px] bg-green-100 text-black border px-3 py-1'>My stomach hurts, I always have the feeling to vomit at any given time, I have frequent urge to burp, but that's too much.</textarea>
+                                            <textarea onChange={() => { }} className='w-full lg:min-w-[700px] sm:min-w-[500px] bg-green-100 text-black border px-3 py-1' value={`My stomach hurts, I always have the feeling to vomit at any given time, I have frequent urge to burp, but that's too much.`}></textarea>
                                         </div>
                                         <div className="border p-3 bg-white rounded-lg flex flex-col gap-3 ">
                                             <input type="text" placeholder='Search Medicine...' className='outline-none border border-gray-700 px-3 py-1 rounded-lg' />
@@ -151,7 +151,7 @@ const DoctorServices = () => {
                                                             <button onClick={toggleDropdownMedicineFilter} type="button" className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100" id="options-menu" aria-expanded="true" aria-haspopup="true">
                                                                 Type
                                                                 <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                                                                 </svg>
                                                             </button>
                                                         </div>
@@ -183,6 +183,16 @@ const DoctorServices = () => {
                                                                 <Link href='/medicine/3' className='px-3 py-1 border rounded-md bg-gray-200'>View Detail</Link>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <ul className="flex flex-col gap-2">
+                                                        <div className="font-bold my-3">List medicines</div>
+                                                        <li className="w-full flex justify-between items-center">
+                                                            <p className='font-semibold'>Item1</p>
+                                                            <p className='font-semibold'>x2</p>
+                                                        </li>
+                                                    </ul>
+                                                    <div className="w-full flex justify-end my-5">
+                                                        <button className='px-3 py-1 rounded-md bg-green-600 text-white '>Confirm</button>
                                                     </div>
                                                 </div>
                                             </div>

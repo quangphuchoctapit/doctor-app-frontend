@@ -1,11 +1,16 @@
+'use client'
 import Link from 'next/link'
 import React from 'react'
 import NavBar from './components/NavBar'
+import type { RootState } from '../app/redux/Store'
 import CategoriesCollection from './components/CategoriesCollection'
 import Footer from './components/Footer'
 import { FaRegBell } from "react-icons/fa";
+import { useDispatch, useSelector } from 'react-redux'
 
 const Home = () => {
+  const userRedux = useSelector((state: RootState) => state.user.value)
+
   return (
     <div className='w-full bg-white text-black'>
 

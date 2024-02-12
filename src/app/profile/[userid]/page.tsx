@@ -1,7 +1,26 @@
-import React from 'react'
+'use client'
+import React, { useState, useEffect } from 'react'
 import { CiCamera } from "react-icons/ci";
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../app/redux/Store'
+
 
 const Profile = () => {
+    const userRedux = useSelector((state: RootState) => state.user.value)
+    const defaultUserProfile = {
+        username: '',
+        email: '',
+        phone: '',
+        location: '',
+        gender: '',
+        image: '',
+        role: '',
+        id: ''
+    }
+    const [userProfile, setUserProfile] = useState(defaultUserProfile)
+    useEffect(() => {
+        setUserProfile({ ...defaultUserProfile, username: userRedux.username, email: userRedux.email, gender: userRedux.gender, image: userRedux.image, role: userRedux.role, id: userRedux.id })
+    }, [userRedux])
     return (
         <div className='min-h-screen bg-gradient-to-tr from-red-200 via-white to-green-200 w-full'>
             <div className="flex flex-col gap-5 items-center container mx-auto">
@@ -10,7 +29,7 @@ const Profile = () => {
                     <p className=''>Update your profile to connect your doctor with better impression.</p>
                     <div className="w-full flex items-center justify-center my-5">
                         <div className="overflow-hidden w-24 h-24 rounded-full relative">
-                            <img src="/doctor/livestreaming/doctor7.jpg" alt="" className='w-full h-full object-cover' />
+                            <img src={userProfile.image} alt="" className='w-full h-full object-cover' />
                             <div className="absolute flex items-center justify-center shadow-lg bottom-1 right-1 w-8 h-8 rounded-full border bg-white text-black z-20">
                                 <CiCamera />
                             </div>
@@ -21,7 +40,7 @@ const Profile = () => {
                     <h3 className='text-lg font-semibold'>Personal Information</h3>
                     <div className="bg-white border px-3 rounded-lg py-1 flex flex-col gap-1">
                         <p className='font-semibold text-green-700'>Name</p>
-                        <input type="text" className='px-3 py-1 outline-none ' placeholder='Tommy Le' />
+                        <input type="text" className='px-3 py-1 outline-none ' placeholder='Tommy Le' value={userRedux.username} onChange={() => { }} />
                     </div>
                     <div className="bg-white border px-3 rounded-lg py-1 flex flex-col gap-1">
                         <p className='font-semibold text-green-700'>Contact Number</p>
