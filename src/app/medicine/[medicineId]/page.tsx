@@ -3,7 +3,7 @@ import { FaCheckCircle } from "react-icons/fa";
 
 const MedicinePage = () => {
     return (
-        <div className='w-full my-5 min-h-screen bg-gradient-to-tr from-green-200 via-white to-blue-200'>
+        <div className='w-full py-5 min-h-screen bg-gradient-to-tr from-green-200 via-white to-blue-200'>
             <div className="container mx-auto flex flex-col gap-5 items-center text-black">
                 <div className="bg-white rounded-md border shadow-lg p-3 grid w-full lg:grid-cols-12">
                     <div className="col-span-7 flex flex-col gap-5">

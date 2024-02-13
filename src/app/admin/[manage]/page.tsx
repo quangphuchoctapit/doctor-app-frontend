@@ -4,7 +4,7 @@ import { useParams } from 'next/navigation'
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import { roles } from '../../../data/role-action-permissions/role-action-permissions.js'
-import { displayTableHeader, displayTableContent } from './structureData.js'
+import { displayTableHeader, DisplayTableContent, DisplayModalAddNew } from './structureData.jsx'
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../..//app/redux/Store'
 import { FaPlusCircle } from "react-icons/fa";
@@ -40,7 +40,7 @@ const AdminManagePage = () => {
     useEffect(() => {
         switch (params.manage) {
             case 'users':
-                displayTableContent('users')
+                // DisplayTableContent('users')
                 return setManageAction('Users')
             case 'clinics':
                 return setManageAction('Clinics')
@@ -56,6 +56,7 @@ const AdminManagePage = () => {
     }, [params])
 
     useEffect(() => {
+        // fetch all users
         const fetchUsers = async () => {
             const users = await fetch(`/api/user`)
             const dataServer = await users.json()
@@ -64,7 +65,48 @@ const AdminManagePage = () => {
                 users: dataServer
             }));
         }
+
+        // fetch all specialties
+        const fetchSpecialties = async () => {
+            const specialties = await fetch(`/api/specialty`)
+            const dataServer = await specialties.json()
+            setDataTable(prevState => ({
+                ...prevState,
+                specialties: dataServer
+            }));
+        }
+        // fetch all clinics
+        const fetchClinics = async () => {
+            const clinics = await fetch(`/api/clinic`)
+            const dataServer = await clinics.json()
+            setDataTable(prevState => ({
+                ...prevState,
+                clinics: dataServer
+            }));
+        }
+        // fetch all clinics
+        const fetchMedicines = async () => {
+            const medicines = await fetch(`/api/medicine`)
+            const dataServer = await medicines.json()
+            setDataTable(prevState => ({
+                ...prevState,
+                medicines: dataServer
+            }));
+        }
+        // fetch all doctors
+        const fetchDoctors = async () => {
+            const doctors = await fetch(`/api/doctor`)
+            const dataServer = await doctors.json()
+            setDataTable(prevState => ({
+                ...prevState,
+                doctors: dataServer
+            }));
+        }
         fetchUsers()
+        fetchSpecialties()
+        fetchClinics()
+        fetchMedicines()
+        fetchDoctors()
     }, [])
 
     const [dataTable, setDataTable] = useState({
@@ -75,7 +117,7 @@ const AdminManagePage = () => {
         doctors: []
     })
 
-    // console.log(dataTable);
+
 
 
     return (
@@ -149,8 +191,8 @@ const AdminManagePage = () => {
                                 <td className="px-6 py-4 whitespace-nowrap">221 Phan Huy Ich</td>
                             </tr> */}
 
-                            {displayTableContent(params.manage, onOpenModalUserAction, dataTable, (currentLoggedInUser.role === 'SA' ? true : false))
-                            }
+                            <DisplayTableContent value={params.manage} onOpenModalUserAction={onOpenModalUserAction} dataTable={dataTable} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} />
+
                         </tbody>
                     </table>
 
@@ -178,18 +220,8 @@ const AdminManagePage = () => {
                     <Modal open={isOpenCreateModal} onClose={onCloseCreateModal} center>
                         <div className="text-black p-3 flex flex-col gap-4">
                             <h2 className='my-4 text-lg font-bold text-center'>Add {params.manage}</h2>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {roles?.map((item, index) => (
-                                    <div className="flex flex-col" key={index}>
-                                        {item.actions?.map((action, index) => (
-                                            <label htmlFor={`${action.id}`} key={index} className='flex items-center gap-1 ms-2  text-sm font-medium text-black'>
-                                                <input id={`${action.id}`} type="checkbox" value={action.id} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
-                                                <span>{action.action}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
+                            {/* {DisplayModalAddNew(params.manage, (currentLoggedInUser.role === 'SA' ? true : false), dataInputModalCreate, setDataInputModalCreate)} */}
+                            <DisplayModalAddNew value={params.manage} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} />
                         </div>
                     </Modal>
                 </div>
