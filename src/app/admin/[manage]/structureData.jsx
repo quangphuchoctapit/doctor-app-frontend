@@ -85,6 +85,8 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
     const [currentSetRoleUser, setCurrentSetRoleUser] = useState('')
     const [selectedRole, setSelectedRole] = useState(''); // State to store the selected radio button value
     const [dataSpecialties, setDataSpecialties] = useState([])
+    const [dataLocations, setDataLocations] = useState([])
+
 
     // Function to handle radio button click
     const handleRadioChange = (event) => {
@@ -123,19 +125,23 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
         const dataFirstForm = dataTable[value].map((item, index) => {
             const obj = { value: '', label: '' }
             obj.value = item._id
-            obj.label = item.name
+            if (item.cityName) {
+                obj.label = item.cityName
+            } else {
+                obj.label = item.name
+            }
             return options.push(obj)
         })
         return options
-        // console.log('check dataFirstForm', dataFirstForm);
     }
 
     // fetch all specialties and assign it to options in react-select
     useEffect(() => {
         const specialtiesData = buildDataOptions('specialties')
+        const locationsData = buildDataOptions('locations')
         setDataSpecialties(specialtiesData)
+        setDataLocations(locationsData)
     }, [dataTable])
-
     switch (value) {
         case 'users':
             return (
@@ -215,7 +221,9 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
             const onCloseModalEditDoctor = () => setIsOpenModalEditDoctor(false)
             const [currentSelectedDoctorId, setCurrentSelectedDoctorId] = useState('')
 
-
+            const handleChangeDoctorInfo = async () => {
+                let response = await fetch(`/api`)
+            }
 
             return (
                 <>
@@ -251,14 +259,14 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label htmlFor="">Doctor Description</label>
-                                    <input type="text" placeholder='image' className='px-4 py-2 rounded-md outline-none border ' />
+                                    <textarea placeholder='description' className='px-4 py-2 rounded-md outline-none border ' />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label htmlFor="">Doctor Location</label>
-                                    <input type="text" placeholder='image' className='px-4 py-2 rounded-md outline-none border ' />
+                                    <Select options={dataLocations} />
                                 </div>
                                 <div className='col-span-4 my-3'>
-                                    <button onClick={handleChangeUserRole} className='text-center px-5 py-2 text-white bg-green-600 rounded-md hover:duration-200 hover:bg-green-800 cursor-pointer'>Change</button>
+                                    <button onClick={handleChangeDoctorInfo} className='text-center px-5 py-2 text-white bg-green-600 rounded-md hover:duration-200 hover:bg-green-800 cursor-pointer'>Confirm</button>
                                 </div>
                             </div>
                         </div>

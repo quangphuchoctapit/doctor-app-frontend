@@ -32,6 +32,11 @@ const DoctorInfoSchema = new Schema({
         // unique: [true, 'This DoctorInfo name already exists!'],
         // required: [true, 'Email is required!'],
     },
+    price: {
+        type: Number,
+        // unique: [true, 'This DoctorInfo name already exists!'],
+        // required: [true, 'Email is required!'],
+    },
     role: {
         type: String,
         // unique: [true, 'This DoctorInfo name already exists!'],

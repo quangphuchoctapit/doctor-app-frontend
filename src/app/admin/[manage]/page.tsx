@@ -37,6 +37,15 @@ const AdminManagePage = () => {
     const onOpenCreateModal = () => setIsOpenCreateModal(true);
     const onCloseCreateModal = () => setIsOpenCreateModal(false);
 
+    const [dataTable, setDataTable] = useState({
+        users: [],
+        medicines: [],
+        clinics: [],
+        specialties: [],
+        doctors: [],
+        locations: []
+    })
+
     useEffect(() => {
         switch (params.manage) {
             case 'users':
@@ -102,22 +111,23 @@ const AdminManagePage = () => {
                 doctors: dataServer
             }));
         }
+        // fetch all locations
+        const fetchLocations = async () => {
+            const locations = await fetch(`/api/location`)
+            const dataServer = await locations.json()
+
+            setDataTable(prevState => ({
+                ...prevState,
+                locations: dataServer
+            }));
+        }
         fetchUsers()
         fetchSpecialties()
         fetchClinics()
         fetchMedicines()
         fetchDoctors()
+        fetchLocations()
     }, [])
-
-    const [dataTable, setDataTable] = useState({
-        users: [],
-        medicines: [],
-        clinics: [],
-        specialties: [],
-        doctors: []
-    })
-
-
 
 
     return (
@@ -167,29 +177,6 @@ const AdminManagePage = () => {
                             }
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200 ">
-                            {/* <tr>
-                                <td className="px-6 py-4 whitespace-nowrap">Image</td>
-                                <td className="px-6 py-4 whitespace-nowrap">1</td>
-                                <td className="px-6 py-4 whitespace-nowrap">John Doe</td>
-                                <td className="px-6 py-4 whitespace-nowrap">john@example.com</td>
-                                <td className="px-6 py-4 whitespace-nowrap">Doctor</td>
-                                <td className="max-sm:w-full flex items-center py-2 px-2 justify-center border border-transparent text-sm font-medium translate-y-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={onOpenModalUserAction}>
-                                    <button className="">Set Action</button>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">Medicine Specialist</td>
-                                <td className="px-6 py-4 whitespace-nowrap">$ 20/hour</td>
-                                <td className="px-6 py-4 whitespace-nowrap">box</td>
-                                <td className="px-6 py-4 whitespace-nowrap">988</td>
-                                <td className="px-6 py-4 whitespace-nowrap">1222</td>
-                                <td className="px-6 py-4 whitespace-nowrap">Calci Carbonat, Natri bicarbonat, Natri alginate</td>
-                                <td className="px-6 py-4 whitespace-nowrap overflow-hidden text-overflow-ellipsis max-w-xs ">Điều trị các triệu chứng của trào ngược dạ dày - thực quản như ợ nóng, khó tiêu và ợ chua liên quan đến sự trào ngược như sau bữa ăn, hoặc trong khi mang thai, hoặc trên những bệnh nhân có các triệu chứng liên quan với viêm thực quản do trào ngược.</td>
-                                <td className="px-6 py-4 whitespace-nowrap">England</td>
-                                <td className="px-6 py-4 whitespace-nowrap">Blended Liquid</td>
-                                <td className="px-6 py-4 whitespace-nowrap">England</td>
-                                <td className="px-6 py-4 whitespace-nowrap">Reckitt Benckiser (England)</td>
-                                <td className="px-6 py-4 whitespace-nowrap">description</td>
-                                <td className="px-6 py-4 whitespace-nowrap">221 Phan Huy Ich</td>
-                            </tr> */}
 
                             <DisplayTableContent value={params.manage} onOpenModalUserAction={onOpenModalUserAction} dataTable={dataTable} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} />
 
