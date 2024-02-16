@@ -1,12 +1,13 @@
 'use client'
+import { useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 import { CiCamera } from "react-icons/ci";
 import { useSelector } from 'react-redux';
-import type { RootState } from '../../../app/redux/Store'
 
 
 const Profile = () => {
-    const userRedux = useSelector((state: RootState) => state.user.value)
+    const params = useParams()
+    const userRedux = useSelector((state) => state.user.value)
     const defaultUserProfile = {
         username: '',
         email: '',
@@ -18,8 +19,39 @@ const Profile = () => {
         id: ''
     }
     const [userProfile, setUserProfile] = useState(defaultUserProfile)
+    const [selectedFileImage, setSelectedFileImage] = useState(null);
+    const [base64String, setBase64String] = useState('');
+    const handleFileChange = async (event) => {
+        const file = event.target.files?.[0]; // Get the first selected file
+        setSelectedFileImage(file); // Store the file object in state
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const base64 = reader.result;
+                setBase64String(base64); // Store the base64 string in state
+
+                // Send file data to server
+                const response = await fetch('/api/user/image/new-or-update', {
+                    method: 'POST',
+                    body: JSON.stringify({ image: base64, userId: params.userid }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const dataServer = await response.json();
+            };
+            reader.readAsDataURL(file); // Convert the file to base64
+        }
+    };
+
+
     useEffect(() => {
-        setUserProfile({ ...defaultUserProfile, username: userRedux.username, email: userRedux.email, gender: userRedux.gender, image: userRedux.image, role: userRedux.role, id: userRedux.id })
+        setUserProfile({
+            ...defaultUserProfile,
+            username: userRedux.username, email: userRedux.email,
+            gender: userRedux.gender, image: userRedux.image,
+            role: userRedux.role, id: userRedux.id
+        })
     }, [userRedux])
     return (
         <div className='min-h-screen bg-gradient-to-tr from-red-200 via-white to-green-200 w-full'>
@@ -31,7 +63,14 @@ const Profile = () => {
                         <div className="overflow-hidden w-24 h-24 rounded-full relative">
                             <img src={userProfile.image} alt="" className='w-full h-full object-cover' />
                             <div className="absolute flex items-center justify-center shadow-lg bottom-1 right-1 w-8 h-8 rounded-full border bg-white text-black z-20">
-                                <CiCamera />
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="doctorImage" className="text-gray-600">
+                                        <CiCamera />
+                                    </label>
+                                    <div className="relative">
+                                        <input type="file" id="doctorImage" accept="image/*" className='hidden' onChange={handleFileChange} />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

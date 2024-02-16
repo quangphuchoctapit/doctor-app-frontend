@@ -1,5 +1,5 @@
 import { connectToDB } from "../../../../utils/database"
-import Medicine from "../../../models/Medicine"
+import Medicine from "../../../models/medicine"
 
 
 //login

@@ -10,10 +10,13 @@ const NavBar = () => {
 
     const [userImg, setUserImg] = useState('')
     const [username, setUsername] = useState('')
+    const [userId, setUserId] = useState('')
+
 
     useEffect(() => {
         setUserImg(userRedux.image)
         setUsername(userRedux.username)
+        setUserId(userRedux.id)
     }, [userRedux])
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDropdownUser, setIsOpenDropdownUser] = useState(false)
@@ -52,15 +55,16 @@ const NavBar = () => {
                     <Link href="/doctor-services" className="text-white mr-4 hidden sm:block hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Doctor</Link>
 
                 </div>
-                {username &&
-                    <div className='text-white'>{username}</div>
-                }
-                <div className="">
+
+                <div className="flex gap-1 items-center">
+                    {username &&
+                        <div className='text-white'>{username}</div>
+                    }
                     <div onClick={toggleDropdownUser} className="w-12 right-0 h-12 border rounded-full relative">
                         <img src={userImg} alt={username} className='w-full h-full rounded-full object-cover' />
                         {isOpenDropdownUser && (
                             <div className="absolute top-full z-10 right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
-                                <Link href="/profile/3" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</Link>
+                                <Link href={`/profile/${userId}`} className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</Link>
                                 <Link href="/orders" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Orders</Link>
                                 <Link href="/cart" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Cart</Link>
                                 <Link href="/login" className="block px-4 py-2 text-red-800 hover:bg-gray-700 hover:text-red-300 font-bold">Log Out</Link>

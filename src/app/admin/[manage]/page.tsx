@@ -46,6 +46,7 @@ const AdminManagePage = () => {
         locations: []
     })
 
+    // get url param and set title's name
     useEffect(() => {
         switch (params.manage) {
             case 'users':
@@ -64,6 +65,8 @@ const AdminManagePage = () => {
         }
     }, [params])
 
+
+    // fetch users/doctors/specialties/doctors/clinics/locations/medicines
     useEffect(() => {
         // fetch all users
         const fetchUsers = async () => {
@@ -93,7 +96,7 @@ const AdminManagePage = () => {
                 clinics: dataServer
             }));
         }
-        // fetch all clinics
+        // fetch all medicines
         const fetchMedicines = async () => {
             const medicines = await fetch(`/api/medicine`)
             const dataServer = await medicines.json()
@@ -147,14 +150,14 @@ const AdminManagePage = () => {
                                     <button onClick={onOpenCreateModal} className='max-sm:w-full inline-flex items-center justify-center px-4 py-2 border gap-1 border-transparent text-sm font-medium rounded-md text-white bg-lime-600 hover:bg-lime-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-800'><FaPlusCircle /><span>Add {params.manage}</span></button>
                             }
 
-                            {/* Dropdown Toggle */}
+                            {/* Dropdown filter role */}
                             <button
                                 onClick={toggleDropdown}
                                 className="max-sm:w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Filter
                             </button>
-                            {/* Dropdown Items */}
+                            {/* Dropdown Items role */}
                             {isOpenFilter && (
                                 <div className="origin-top-right z-10 absolute right-0 -mr-3 mt-16 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                                     <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
@@ -173,13 +176,16 @@ const AdminManagePage = () => {
                 <div className="w-full p-3 rounded-md overflow-x-auto bg-white shadow-lg border">
                     <table className="table-auto min-w-full divide-y divide-gray-200">
                         <thead>
-                            {displayTableHeader(params.manage, (currentLoggedInUser.role === 'SA' ? true : false))
+                            {displayTableHeader(params.manage,
+                                (currentLoggedInUser.role === 'SA' ? true : false))
                             }
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200 ">
-
-                            <DisplayTableContent value={params.manage} onOpenModalUserAction={onOpenModalUserAction} dataTable={dataTable} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} />
-
+                            <DisplayTableContent value={params.manage}
+                                onOpenModalUserAction={onOpenModalUserAction}
+                                dataTable={dataTable}
+                                isAdmin={currentLoggedInUser.role === 'SA' ? true : false}
+                            />
                         </tbody>
                     </table>
 
@@ -208,7 +214,7 @@ const AdminManagePage = () => {
                         <div className="text-black p-3 flex flex-col gap-4">
                             <h2 className='my-4 text-lg font-bold text-center'>Add {params.manage}</h2>
                             {/* {DisplayModalAddNew(params.manage, (currentLoggedInUser.role === 'SA' ? true : false), dataInputModalCreate, setDataInputModalCreate)} */}
-                            <DisplayModalAddNew value={params.manage} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} />
+                            <DisplayModalAddNew value={params.manage} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} dataTable={dataTable} />
                         </div>
                     </Modal>
                 </div>

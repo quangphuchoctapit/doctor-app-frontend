@@ -1,5 +1,5 @@
 import { connectToDB } from "../../../../../utils/database"
-import Clinic from "../../../../models/Clinic"
+import Clinic from "../../../../models/clinic"
 
 export const POST = async (req, res) => {
     const { name, image, description, location, brandOwner } = await req.json()

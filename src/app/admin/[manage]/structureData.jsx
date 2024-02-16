@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import Select from 'react-select'
+// import { handleFileChange } from '../../../../utils/imageUtils'
 
 const displayTableHeader = (value, isAdmin) => {
     switch (value) {
@@ -33,6 +34,7 @@ const displayTableHeader = (value, isAdmin) => {
                     <td className="px-6 py-4 whitespace-nowrap">Total Patients</td>
                     <td className="px-6 py-4 whitespace-nowrap">Description</td>
                     <td className="px-6 py-4 whitespace-nowrap">Location</td>
+                    <td className="px-6 py-4 whitespace-nowrap">Clinic</td>
                 </tr>
             )
         case 'medicines':
@@ -86,10 +88,18 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
     const [selectedRole, setSelectedRole] = useState(''); // State to store the selected radio button value
     const [dataSpecialties, setDataSpecialties] = useState([])
     const [dataLocations, setDataLocations] = useState([])
-
+    const [dataClinics, setDataClinics] = useState([])
+    const [dataPrices, setDataPrices] = useState([
+        { value: 50, label: 50 },
+        { value: 100, label: 100 },
+        { value: 200, label: 200 },
+        { value: 500, label: 500 },
+        { value: 1000, label: 1000 },
+        { value: 1500, label: 1500 }
+    ])
 
     // Function to handle radio button click
-    const handleRadioChange = (event) => {
+    const handleRadioChangeUserRole = (event) => {
         setSelectedRole(event.target.value); // Update the state with the selected radio button value
     };
 
@@ -119,7 +129,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
             });
     }
 
-
+    // build data for react-select
     const buildDataOptions = (value) => {
         const options = []
         const dataFirstForm = dataTable[value].map((item, index) => {
@@ -135,13 +145,17 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
         return options
     }
 
-    // fetch all specialties and assign it to options in react-select
+    // fetch all specialties, locations and assign it to options in react-select
     useEffect(() => {
         const specialtiesData = buildDataOptions('specialties')
+        const clinicsData = buildDataOptions('clinics')
         const locationsData = buildDataOptions('locations')
         setDataSpecialties(specialtiesData)
         setDataLocations(locationsData)
+        setDataClinics(clinicsData)
     }, [dataTable])
+
+
     switch (value) {
         case 'users':
             return (
@@ -176,7 +190,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                                         type="radio"
                                         value="D"
                                         checked={selectedRole === 'D'}
-                                        onChange={handleRadioChange}
+                                        onChange={handleRadioChangeUserRole}
                                     />
                                     <span className="ml-2">Doctor</span>
                                 </label>
@@ -185,7 +199,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                                         type="radio"
                                         value="SA"
                                         checked={selectedRole === 'SA'}
-                                        onChange={handleRadioChange}
+                                        onChange={handleRadioChangeUserRole}
                                     />
                                     <span className="ml-2">Admin</span>
                                 </label>
@@ -194,7 +208,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                                         type="radio"
                                         value="P"
                                         checked={selectedRole === 'P'}
-                                        onChange={handleRadioChange}
+                                        onChange={handleRadioChangeUserRole}
                                     />
                                     <span className="ml-2">Patient</span>
                                 </label>
@@ -203,7 +217,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                                         type="radio"
                                         value="PH"
                                         checked={selectedRole === 'PH'}
-                                        onChange={handleRadioChange}
+                                        onChange={handleRadioChangeUserRole}
                                     />
                                     <span className="ml-2">Pharmacist</span>
                                 </label>
@@ -220,24 +234,79 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
             const onOpenModalEditDoctor = () => setIsOpenModalEditDoctor(true)
             const onCloseModalEditDoctor = () => setIsOpenModalEditDoctor(false)
             const [currentSelectedDoctorId, setCurrentSelectedDoctorId] = useState('')
+            const [doctorDescription, setDoctorDescription] = useState('')
+            const [selectedFileImage, setSelectedFileImage] = useState(null);
+            const [base64String, setBase64String] = useState('');
+            const handleFileChange = (event) => {
+                const file = event.target.files[0]; // Get the first selected file
+                setSelectedFileImage(file); // Store the file object in state
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        const base64 = reader.result;
+                        setBase64String(base64); // Store the base64 string in state
+                    };
+                    reader.readAsDataURL(file); // Convert the file to base64
+                }
+            };
+            const handleChangeDoctorDescription = (e) => {
+                setDoctorDescription(e)
+            }
+            const [selectedSpecialtyModalDoctorInfo, setSelectedSpecialtyModalDoctorInfo] = useState('')
+            const [selectedLocationModalDoctorInfo, setSelectedLocationModalDoctorInfo] = useState('')
+            const [selectedClinicModalDoctorInfo, setSelectedClinicModalDoctorInfo] = useState('')
+            const [selectedPriceModalDoctorInfo, setSelectedPriceModalDoctorInfo] = useState('')
+
+            const handleChangeSelectedSpecialtyModalDoctorInfo = (selectedOption) => {
+                setSelectedSpecialtyModalDoctorInfo(selectedOption)
+            }
+            const handleChangeSelectedLocationModalDoctorInfo = (selectedOption) => {
+                setSelectedLocationModalDoctorInfo(selectedOption)
+            }
+            const handleChangeSelectedClinicModalDoctorInfo = (selectedOption) => {
+                setSelectedClinicModalDoctorInfo(selectedOption)
+            }
+            const handleChangeSelectedPriceModalDoctorInfo = (selectedOption) => {
+                setSelectedPriceModalDoctorInfo(selectedOption)
+            }
 
             const handleChangeDoctorInfo = async () => {
-                let response = await fetch(`/api`)
+                let response = await fetch(`/api/doctor-info/new-or-update`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            doctorId: currentSelectedDoctorId,
+                            locationId: selectedLocationModalDoctorInfo.value,
+                            specialtyId: selectedSpecialtyModalDoctorInfo.value,
+                            description: doctorDescription, price: selectedPriceModalDoctorInfo.value,
+                            clinicId: selectedClinicModalDoctorInfo.value,
+                        })
+                    }
+                )
+                let dataServer = await response.json()
+                console.log(dataServer)
             }
 
             return (
                 <>
                     {dataTable.doctors.map((item, index) => (
                         <tr onClick={() => { onOpenModalEditDoctor(), setCurrentSelectedDoctorId(item._id) }} key={item._id}>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.image || 'image'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <img src={item.image} alt={item.name} className='w-8 h-8 object-cover' />
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.username || 'doctor name'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.doctorName || 'doctor email'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.specialty || 'doctor specialty'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.pricePerHour || 'doctor price per hour'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.email || 'doctor email'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.doctorInfo?.specialty?.name || 'doctor specialty'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.doctorInfo?.price || 'doctor price per hour'}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.totalPatient || 'total patient'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.description || 'doctor description'}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.location || 'doctor location'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.doctorInfo?.description || 'doctor description'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.doctorInfo?.location?.cityName || 'doctor location'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">{item?.doctorInfo?.clinic?.name || 'doctor clinic'}</td>
+
                         </tr>
                     ))}
                     <Modal open={isOpenModalEditDoctor} onClose={onCloseModalEditDoctor} center>
@@ -245,25 +314,25 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                             <h2 className='my-4 text-lg font-bold text-center'>Set Doctor Info</h2>
                             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
                                 <div className='flex flex-col gap-1'>
-                                    <label htmlFor="">Doctor Image</label>
-                                    <input type="text" placeholder='image' className='px-4 py-2 rounded-md outline-none border ' />
-                                </div>
-                                <div className='flex flex-col gap-1'>
                                     <label htmlFor="">Doctor Specialty</label>
-                                    <Select options={dataSpecialties} />
+                                    <Select options={dataSpecialties} value={selectedSpecialtyModalDoctorInfo} onChange={handleChangeSelectedSpecialtyModalDoctorInfo} />
                                     {/* <input type="text" placeholder='image' className='px-4 py-2 rounded-md outline-none border ' /> */}
                                 </div>
                                 <div className='flex flex-col gap-1'>
-                                    <label htmlFor="">Doctor Price</label>
-                                    <input type="text" placeholder='image' className='px-4 py-2 rounded-md outline-none border ' />
-                                </div>
-                                <div className='flex flex-col gap-1'>
                                     <label htmlFor="">Doctor Description</label>
-                                    <textarea placeholder='description' className='px-4 py-2 rounded-md outline-none border ' />
+                                    <textarea value={doctorDescription} onChange={e => handleChangeDoctorDescription(e.target.value)} placeholder='description' className='px-4 py-2 rounded-md outline-none border ' />
                                 </div>
                                 <div className='flex flex-col gap-1'>
                                     <label htmlFor="">Doctor Location</label>
-                                    <Select options={dataLocations} />
+                                    <Select options={dataLocations} value={selectedLocationModalDoctorInfo} onChange={handleChangeSelectedLocationModalDoctorInfo} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="">Doctor Clinic</label>
+                                    <Select options={dataClinics} value={selectedClinicModalDoctorInfo} onChange={handleChangeSelectedClinicModalDoctorInfo} />
+                                </div>
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="">Doctor Price</label>
+                                    <Select options={dataPrices} value={selectedPriceModalDoctorInfo} onChange={handleChangeSelectedPriceModalDoctorInfo} />
                                 </div>
                                 <div className='col-span-4 my-3'>
                                     <button onClick={handleChangeDoctorInfo} className='text-center px-5 py-2 text-white bg-green-600 rounded-md hover:duration-200 hover:bg-green-800 cursor-pointer'>Confirm</button>
@@ -278,7 +347,9 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                 <>
                     {dataTable.medicines.map((item, index) => (
                         <tr key={item._id}>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.image || 'image'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <img src={item.image} alt={item.name} className='w-8 h-8 object-cover' />
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.name || 'name'}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.type || 'type medicien'}</td>
@@ -301,7 +372,9 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                 <>
                     {dataTable?.clinics?.map((item, index) => (
                         <tr key={item._id}>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.image || 'image'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <img src={item.image} alt={item.name} className='w-8 h-8 object-cover' />
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.name}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.available || 1}</td>
@@ -317,7 +390,9 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                 <>
                     {dataTable?.specialties?.map((item, index) => (
                         <tr key={item._id}>
-                            <td className="px-6 py-4 whitespace-nowrap">{item?.image || 'image'}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                                <img src={item.image} alt={item.name} className='w-8 h-8 object-cover' />
+                            </td>
                             <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.name}</td>
                             <td className="px-6 py-4 whitespace-nowrap">{item?.totalDoctors || 888}</td>
@@ -328,7 +403,25 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
     }
 }
 
-const DisplayModalAddNew = ({ value, isAdmin }) => {
+
+// modal add new
+const DisplayModalAddNew = ({ value, isAdmin, dataTable }) => {
+    const [selectedFileImage, setSelectedFileImage] = useState(null);
+    const [base64String, setBase64String] = useState('');
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]; // Get the first selected file
+        setSelectedFileImage(file); // Store the file object in state
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result;
+                setBase64String(base64); // Store the base64 string in state
+            };
+            reader.readAsDataURL(file); // Convert the file to base64
+        }
+    };
+
+
     const [dataInput, setDataInput] = useState({
         id: '',
         image: '',
@@ -348,6 +441,35 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
         provider: ''
     })
 
+    const [dataSpecialties, setDataSpecialties] = useState([])
+    // build data for react-select
+    const buildDataOptions = (value) => {
+        const options = []
+        const dataFirstForm = dataTable[value].map((item, index) => {
+            const obj = { value: '', label: '' }
+            obj.value = item._id
+            if (item.cityName) {
+                obj.label = item.cityName
+            } else {
+                obj.label = item.name
+            }
+            return options.push(obj)
+        })
+        return options
+    }
+    const [selectedSpecialtyModalDoctorInfo, setSelectedSpecialtyModalDoctorInfo] = useState('')
+
+    const handleChangeSelectedSpecialtyModalDoctorInfo = (selectedOption) => {
+        setSelectedSpecialtyModalDoctorInfo(selectedOption)
+    }
+
+    // fetch all specialties, locations and assign it to options in react-select
+    useEffect(() => {
+        const specialtiesData = buildDataOptions('specialties')
+        setDataSpecialties(specialtiesData)
+    }, [])
+
+
     const { description, image, type, name, location, unit, price, ingredients,
         dispensed, originCountry, provider, totalDoctors, brandOwner, usage,
         available } = dataInput
@@ -356,36 +478,33 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
         const response = await fetch(`/api/specialty/new`, {
             method: "POST",
             body: JSON.stringify({
-                description, image, name
+                description, image: base64String, name
             }),
         });
         const dataServer = await response.json()
-        console.log(dataServer);
     }
 
     const handleAddClinic = async () => {
         const response = await fetch(`/api/clinic/new`, {
             method: "POST",
             body: JSON.stringify({
-                description, image, name, location, brandOwner
+                description, image: base64String, name, location, brandOwner, type: selectedSpecialtyModalDoctorInfo.value
             }),
         });
         const dataServer = await response.json()
-        console.log(dataServer);
     }
 
     const handleAddMedicine = async () => {
         const response = await fetch(`/api/medicine/new`, {
             method: "POST",
             body: JSON.stringify({
-                name, image, price, description,
+                name, image: base64String, price, description,
                 brandOwner, usage, dispensed,
                 originCountry, provider, ingredients,
                 type, unit
             }),
         });
         const dataServer = await response.json()
-        console.log(dataServer);
     }
 
     const handleOnChangeInput = (e, value) => {
@@ -397,16 +516,27 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
 
     switch (value) {
         case 'medicines':
+
             return (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <div className='flex flex-col gap-1'>
+                            <label htmlFor="doctorImage" className="text-gray-600">Doctor Image</label>
+                            <div className="relative">
+                                <input type="file" id="doctorImage" accept="image/*" className='hidden' onChange={handleFileChange} />
+                                <label htmlFor="doctorImage" className="bg-white rounded-md px-4 py-2 border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:border-blue-500">
+                                    <span className="text-sm text-gray-500">Choose Image</span>
+                                </label>
+                            </div>
+                            {selectedFileImage && (
+                                <div className='pt-1'>
+                                    <p className='text-xs'>Selected file: {selectedFileImage.name}</p>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Name</label>
                             <input onChange={e => handleOnChangeInput(e.target.value, 'name')} value={dataInput.name} type="text" placeholder='name' className='w-full px-3 py-1 rounded border' />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="">Image</label>
-                            <input onChange={e => handleOnChangeInput(e.target.value, 'image')} value={dataInput.image} type="text" placeholder='image' className='w-full px-3 py-1 rounded border' />
                         </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Price</label>
@@ -442,7 +572,7 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
                         </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Medicine type</label>
-                            <input onChange={e => handleOnChangeInput(e.target.value, 'type')} value={dataInput.type} type="text" placeholder='medicine type' className='w-full px-3 py-1 rounded border' />
+                            <Select options={dataSpecialties} value={selectedSpecialtyModalDoctorInfo} onChange={handleChangeSelectedSpecialtyModalDoctorInfo} />
                         </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Unit package</label>
@@ -458,13 +588,23 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
             return (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <div className='flex flex-col gap-1'>
+                            <label htmlFor="doctorImage" className="text-gray-600">Doctor Image</label>
+                            <div className="relative">
+                                <input type="file" id="doctorImage" accept="image/*" className='hidden' onChange={handleFileChange} />
+                                <label htmlFor="doctorImage" className="bg-white rounded-md px-4 py-2 border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:border-blue-500">
+                                    <span className="text-sm text-gray-500">Choose Image</span>
+                                </label>
+                            </div>
+                            {selectedFileImage && (
+                                <div className='pt-1'>
+                                    <p className='text-xs'>Selected file: {selectedFileImage.name}</p>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Name</label>
                             <input value={dataInput.name} onChange={e => handleOnChangeInput(e.target.value, 'name')} type="text" placeholder='name' className='w-full px-3 py-1 rounded border' />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="">Image</label>
-                            <input type="text" value={dataInput.image} onChange={e => handleOnChangeInput(e.target.value, 'image')} placeholder='image' className='w-full px-3 py-1 rounded border' />
                         </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Description</label>
@@ -488,13 +628,23 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
             return (
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                        <div className='flex flex-col gap-1'>
+                            <label htmlFor="doctorImage" className="text-gray-600">Doctor Image</label>
+                            <div className="relative">
+                                <input type="file" id="doctorImage" accept="image/*" className='hidden' onChange={handleFileChange} />
+                                <label htmlFor="doctorImage" className="bg-white rounded-md px-4 py-2 border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:border-blue-500">
+                                    <span className="text-sm text-gray-500">Choose Image</span>
+                                </label>
+                            </div>
+                            {selectedFileImage && (
+                                <div className='pt-1'>
+                                    <p className='text-xs'>Selected file: {selectedFileImage.name}</p>
+                                </div>
+                            )}
+                        </div>
                         <div className="flex flex-col gap-1">
                             <label htmlFor="">Name</label>
                             <input value={dataInput.name} onChange={e => handleOnChangeInput((e.target.value), 'name')} type="text" placeholder='name' className='w-full px-3 py-1 rounded border' />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label htmlFor="">Image</label>
-                            <input type="text" value={dataInput.image} onChange={e => handleOnChangeInput((e.target.value), 'image')} placeholder='image' className='w-full px-3 py-1 rounded border' />
                         </div>
                         <div className="flex flex-col col-span-3 gap-1">
                             <label htmlFor="">Description</label>
@@ -511,29 +661,3 @@ const DisplayModalAddNew = ({ value, isAdmin }) => {
 }
 
 export { displayTableHeader, DisplayTableContent, DisplayModalAddNew }
-
-
-{/* <tr>
-<td className="px-6 py-4 whitespace-nowrap">Image</td>
-<td className="px-6 py-4 whitespace-nowrap">1</td>
-<td className="px-6 py-4 whitespace-nowrap">John Doe</td>
-<td className="px-6 py-4 whitespace-nowrap">john@example.com</td>
-<td className="px-6 py-4 whitespace-nowrap">Doctor</td>
-<td className="max-sm:w-full flex items-center py-2 px-2 justify-center border border-transparent text-sm font-medium translate-y-2 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" onClick={onOpenModalUserAction}>
-    <button className="">Set Action</button>
-</td>
-<td className="px-6 py-4 whitespace-nowrap">Medicine Specialist</td>
-<td className="px-6 py-4 whitespace-nowrap">$ 20/hour</td>
-<td className="px-6 py-4 whitespace-nowrap">box</td>
-<td className="px-6 py-4 whitespace-nowrap">988</td>
-<td className="px-6 py-4 whitespace-nowrap">1222</td>
-<td className="px-6 py-4 whitespace-nowrap">Calci Carbonat, Natri bicarbonat, Natri alginate</td>
-<td className="px-6 py-4 whitespace-nowrap overflow-hidden text-overflow-ellipsis max-w-xs ">Điều trị các triệu chứng của trào ngược dạ dày - thực quản như ợ nóng, khó tiêu và ợ chua liên quan đến sự trào ngược như sau bữa ăn, hoặc trong khi mang thai, hoặc trên những bệnh nhân có các triệu chứng liên quan với viêm thực quản do trào ngược.</td>
-<td className="px-6 py-4 whitespace-nowrap">England</td>
-<td className="px-6 py-4 whitespace-nowrap">Blended Liquid</td>
-<td className="px-6 py-4 whitespace-nowrap">England</td>
-<td className="px-6 py-4 whitespace-nowrap">Reckitt Benckiser (England)</td>
-<td className="px-6 py-4 whitespace-nowrap">description</td>
-<td className="px-6 py-4 whitespace-nowrap">221 Phan Huy Ich</td>
-</tr>  
-*/}

@@ -6,16 +6,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { toast } from 'react-toastify'
 import type { RootState } from '../redux/Store'
 import { loggedIn } from '../redux/features/user/userSlice'
-import { decrement, increment, incrementByAmount } from '../redux/features/counter/counterSlice';
 
 const page = () => {
     const dispatch = useDispatch()
     const userRedux = useSelector((state: RootState) => state.user.value)
     const idRedux = useSelector((state: RootState) => state.user.value.id)
-
-    const counterRedux = useSelector((state: RootState) => state.counter.value)
-
-
 
     const router = useRouter()
     const [email, setEmail] = useState('')
@@ -30,11 +25,10 @@ const page = () => {
         });
 
         const dataServer = await response.json()
-        let defaultImage = dataServer.gender === 'male' ? '/user/avatar/user-male.png' : '/user/avatar/user-female.png'
-        const { username, id, role, gender } = dataServer
-
+        let defaultImage = dataServer.image ? dataServer.image : dataServer.gender === 'male' ? '/user/avatar/user-male.png' : '/user/avatar/user-female.png'
+        const { username, _id, role, gender } = dataServer
         if (response.ok) {
-            await dispatch(loggedIn({ email: dataServer.email, username: username, image: defaultImage, id: id, role: role, gender: gender }))
+            await dispatch(loggedIn({ email: dataServer.email, username: username, image: defaultImage, id: _id, role: role, gender: gender }))
             router.push('/')
             // console.log(userRedux);
 
@@ -52,10 +46,6 @@ const page = () => {
                     {/* title */}
                     <div className="flex items-center">
                         <h1 className='text-3xl font-bold'>Welcome back, </h1>
-                        <button onClick={() => dispatch(increment())}>-</button>
-                        <label htmlFor="" className='font-bold'>{counterRedux}</label>
-                        <button onClick={() => dispatch(decrement())}>+</button>
-                        <label htmlFor="">id: {idRedux}</label>
                     </div>
                     <div className="flex flex-col gap-2 items-start w-full">
                         <label htmlFor="email">Email:</label>

@@ -1,5 +1,5 @@
 import { connectToDB } from "../../../../../utils/database"
-import Specialty from "../../../../models/Specialty"
+import Specialty from "../../../../models/specialty"
 
 export const POST = async (req, res) => {
     const { name, image, description } = await req.json()

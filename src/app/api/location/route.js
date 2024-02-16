@@ -1,5 +1,5 @@
 import { connectToDB } from "../../../../utils/database"
-import Location from "../../../models/Location"
+import Location from "../../../models/location"
 
 
 // get all Location data 
