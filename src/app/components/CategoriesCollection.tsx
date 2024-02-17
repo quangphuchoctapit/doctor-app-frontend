@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { CgMediaLive } from "react-icons/cg";
 import { useRouter } from 'next/navigation'; // Corrected import statement
 import { FaStar } from "react-icons/fa";
@@ -14,25 +14,34 @@ interface ICategoriesCollectionProps {
         _id?: string;
         name?: string;
         image?: string;
+        doctorInfo?: {
+            specialty?: {
+                name?: string
+            }
+            price?: number
+        }
+        username?: string
     }[];
     isLive?: boolean
 }
 
 const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, data, fullData, isLive }) => {
     const router = useRouter(); // Changed let to const for router
+    const [selectedDoctorId, setSelectedDoctorId] = useState('')
+    const [selectedMedicineId, setSelectedMedicineId] = useState('')
 
     const sizeCards = () => {
         let size = '';
         if (topic === 'Live Doctors') {
-            size = "min-w-48 h-56 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
+            size = "min-w-48 hover:duration-300 hover:scale-95 cursor-pointer hover:bg-gray-100 h-56 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
         } else if (topic === 'Specialties') {
-            size = "min-w-36 h-36 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
+            size = "min-w-36 hover:duration-300 hover:scale-95 cursor-pointer hover:bg-gray-100 h-36 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
         } else if (topic === 'Popular Doctors') {
-            size = "min-w-56 h-72 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
+            size = "min-w-56 hover:duration-300 hover:scale-95 cursor-pointer hover:bg-gray-100 h-72 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
         } else if (topic === 'Featured Doctors') {
-            size = "min-w-48 p-2 h-48 rounded-lg overflow-hidden relative border shadow-lg flex flex-col flex justify-center";
+            size = "min-w-48 hover:duration-300 hover:scale-95 cursor-pointer hover:bg-gray-100 p-2 h-48 rounded-lg overflow-hidden relative border shadow-lg flex flex-col flex justify-center";
         } else if (topic === 'Medicine Order') {
-            size = "min-w-36 h-36 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
+            size = "min-w-36 hover:duration-300 hover:scale-95 cursor-pointer hover:bg-gray-100 h-36 rounded-lg overflow-hidden relative border shadow-lg flex flex-col";
         }
         return size;
     };
@@ -53,18 +62,35 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
         return size;
     };
 
-    const handleRedirect = () => {
-        if (topic === 'Featured Doctors' || topic === 'Popular Doctors') {
-            router.push('/doctor/3');
-        } else if (topic === 'Medicine Order') {
-            router.push('/medicine/3');
+    const handleRedirect = (id: any) => {
+        try {
+            if (topic === 'Featured Doctors' || topic === 'Popular Doctors') {
+                setSelectedDoctorId(id)
+            } else if (topic === 'Medicine Order') {
+                setSelectedMedicineId(id)
+            }
+        } catch (e) {
+            console.log('error:', e);
+
         }
     };
+    useEffect(() => {
+        if (selectedDoctorId) {
+            if (topic === 'Featured Doctors' || topic === 'Popular Doctors') {
+                router.push(`/doctor/${selectedDoctorId}`);
+            }
+        }
+        else if (selectedMedicineId) {
+            // console.log(selectedMedicineId);
+
+            router.push(`/medicine/${selectedMedicineId}`);
+        }
+    }, [selectedDoctorId, selectedMedicineId, handleRedirect])
 
     return (
         <div className="flex flex-col gap-3 mt-3">
             <div className="flex justify-between items-center">
-                <h3 className='text-xl font-bold'>{topic}</h3>
+                <h3 className='text-xl font-bold text-lime-800'>{topic}</h3>
                 <div className="text-gray-400">See All</div>
             </div>
             {topic === 'Medicine Order' &&
@@ -75,13 +101,13 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
             <div className="overflow-x-auto flex gap-3 items-center">
                 {fullData?.map((item, index) => (
                     <div
-                        key={index}
-                        onClick={() => handleRedirect()}
+                        key={item._id}
+                        onClick={() => handleRedirect(item._id)}
                         className={sizeCards()}
                     >
                         {topic === 'Featured Doctors' &&
                             <div className="flex items-center mx-2 justify-between">
-                                <div className="text-gray-400">heart</div>
+                                <div className="text-gray-400">{item?.doctorInfo?.specialty?.name || 'Specialty'}</div>
                                 <div className="flex gap-1 items-center"><FaStar className='text-yellow-400' size={15} /> <span className='font-bold'>3.7</span></div>
                             </div>
                         }
@@ -93,15 +119,18 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
                         </div>
                         {topic === 'Popular Doctors' &&
                             <div className="flex flex-col items-center">
-                                <div className="text-xl font-bold">Dr Doctor</div>
-                                <div className="text-md text-gray-500">Medicine Specialist</div>
-                                <div className="">1 2 3 4 5</div>
+                                <div className="text-xl font-bold">{item?.username || 'Doctor name'}</div>
+                                <div className="text-md text-gray-500">{item?.doctorInfo?.specialty?.name || 'Specialty'}</div>
+                                <div className="flex items-center gap-1 mt-3">
+                                    <FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} />
+                                </div>
+                                <div className="mt-2 text-gray-500">25k patients</div>
                             </div>
                         }
                         {topic === 'Featured Doctors' &&
                             <div className="flex flex-col items-center ">
-                                <div className="text-lg font-bold">Dr Kick</div>
-                                <div className="text-md text-gray-500"><span className='text-green-500'>$</span>25.00/hour</div>
+                                <div className="text-lg font-bold">{item?.username || 'Doctor name'}</div>
+                                <div className="text-md text-gray-500"><span className='text-green-500'>$</span>{item?.doctorInfo?.price}/hour</div>
                             </div>
                         }
                         {topic === 'Medicine Order' &&

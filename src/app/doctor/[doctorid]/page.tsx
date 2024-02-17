@@ -8,11 +8,11 @@ const DoctorDetail = () => {
 
                 {/* intro */}
                 <div className="shadow-lg border rounded-lg bg-white p-3 flex flex-col">
-                    <div className="grid grid-cols-3 gap-3 text-black">
-                        <div className="col-span-1">
+                    <div className="grid grid-cols-8 gap-3 text-black">
+                        <div className="col-span-2">
                             <div className="bg-green border w-20 sm:h-32 h-20 sm:w-32 gap-3"></div>
                         </div>
-                        <div className="col-span-2 flex gap-3 justify-between">
+                        <div className="col-span-6 flex gap-3 justify-between">
                             <div className="flex flex-col ">
                                 <h3 className='sm:text-lg font-bold'>Dr Dog</h3>
                                 <p className='text-gray-400 max-sm:text-xs'>Specialist Cardiologist</p>

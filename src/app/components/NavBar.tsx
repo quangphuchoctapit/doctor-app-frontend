@@ -44,11 +44,11 @@ const NavBar = () => {
                         </button>
                         {isOpen && (
                             <div className="absolute z-10 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
-                                <Link href="/admin/users" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Users</Link>
-                                <Link href="/admin/doctors" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Doctors</Link>
-                                <Link href="/admin/clinics" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Clinics</Link>
-                                <Link href="/admin/medicines" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Medicines</Link>
-                                <Link href="/admin/specialties" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Specialties</Link>
+                                <Link onClick={() => setIsOpen(false)} href="/admin/users" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Users</Link>
+                                <Link onClick={() => setIsOpen(false)} href="/admin/doctors" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Doctors</Link>
+                                <Link onClick={() => setIsOpen(false)} href="/admin/clinics" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Clinics</Link>
+                                <Link onClick={() => setIsOpen(false)} href="/admin/medicines" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Medicines</Link>
+                                <Link onClick={() => setIsOpen(false)} href="/admin/specialties" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Specialties</Link>
                             </div>
                         )}
                     </div>

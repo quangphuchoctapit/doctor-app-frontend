@@ -23,9 +23,9 @@ const DoctorsPage = () => {
                     <h2 className='text-lg font-bold my-5'>Find Doctors</h2>
                     <input type="text" className='w-full px-3 py-2 border border-gray-800 bg-white outline-none rounded-md' placeholder='Search doctor' />
                 </div>
-                <div className="grid sm:grid-cols-2 gap-3">
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                     {allDoctors?.map((item: any, index) => (
-                        <div key={item._id} className="my-5 bg-white shadow-lg border rounded-md w-full p-3 flex flex-col gap-3">
+                        <div key={item._id} className=" bg-white shadow-lg border rounded-md w-full p-3 flex flex-col gap-3">
                             <div className="flex grow gap-3">
                                 <div className="sm:w-16 sm:h-16 min-w-10 max-h-14">
                                     <img src={item.image} alt="" className='w-full h-full object-cover' />

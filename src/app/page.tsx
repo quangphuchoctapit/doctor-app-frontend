@@ -87,7 +87,7 @@ const Home = () => {
     fetchLocations()
   }, [])
 
-  console.log(dataHomePage);
+  // console.log(dataHomePage);
 
 
   return (
