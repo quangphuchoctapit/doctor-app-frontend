@@ -56,7 +56,7 @@ const NavBar = () => {
 
                 </div>
 
-                <div className="flex gap-1 items-center">
+                <div className="flex max-sm:hidden gap-1 items-center">
                     {username &&
                         <div className='text-white'>{username}</div>
                     }

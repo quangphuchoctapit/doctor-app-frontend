@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import NavBar from './components/NavBar'
 import type { RootState } from '../app/redux/Store'
 import CategoriesCollection from './components/CategoriesCollection'
@@ -10,6 +10,85 @@ import { useDispatch, useSelector } from 'react-redux'
 
 const Home = () => {
   const userRedux = useSelector((state: RootState) => state.user.value)
+
+  const [dataHomePage, setDataHomePage] = useState({
+    users: [],
+    medicines: [],
+    clinics: [],
+    specialties: [],
+    doctors: [],
+    locations: []
+  })
+
+  // fetch all users
+  const fetchUsers = async () => {
+    const users = await fetch(`/api/user`)
+    const dataServer = await users.json()
+    setDataHomePage(prevState => ({
+      ...prevState,
+      users: dataServer
+    }));
+  }
+  // fetch all specialties
+  const fetchSpecialties = async () => {
+    const specialties = await fetch(`/api/specialty`)
+    const dataServer = await specialties.json()
+    setDataHomePage(prevState => ({
+      ...prevState,
+      specialties: dataServer
+    }));
+  }
+  // fetch all clinics
+  const fetchClinics = async () => {
+    const clinics = await fetch(`/api/clinic`)
+    const dataServer = await clinics.json()
+    setDataHomePage(prevState => ({
+      ...prevState,
+      clinics: dataServer
+    }));
+  }
+  // fetch all medicines
+  const fetchMedicines = async () => {
+    const medicines = await fetch(`/api/medicine`)
+    const dataServer = await medicines.json()
+    setDataHomePage(prevState => ({
+      ...prevState,
+      medicines: dataServer
+    }));
+  }
+  // fetch all doctors
+  const fetchDoctors = async () => {
+    const doctors = await fetch(`/api/doctor`)
+    const dataServer = await doctors.json()
+    setDataHomePage(prevState => ({
+      ...prevState,
+      doctors: dataServer
+    }));
+  }
+  // fetch all locations
+  const fetchLocations = async () => {
+    const locations = await fetch(`/api/location`)
+    const dataServer = await locations.json()
+
+    setDataHomePage(prevState => ({
+      ...prevState,
+      locations: dataServer
+    }));
+  }
+
+  // fetch users/doctors/specialties/doctors/clinics/locations/medicines
+  useEffect(() => {
+
+    fetchUsers()
+    fetchSpecialties()
+    fetchClinics()
+    fetchMedicines()
+    fetchDoctors()
+    fetchLocations()
+  }, [])
+
+  console.log(dataHomePage);
+
 
   return (
     <div className='w-full bg-white text-black'>
@@ -28,17 +107,17 @@ const Home = () => {
 
           {/* live doctors */}
           <div className="my-5">
-            <CategoriesCollection topic='Live Doctors' data={{ id: 1, image: `/doctor/livestreaming/doctor7.jpg`, isLive: true }} />
+            <CategoriesCollection topic='Live Doctors' fullData={dataHomePage.doctors} isLive={true} />
             <br />
-            <CategoriesCollection topic='Specialties' />
+            <CategoriesCollection topic='Specialties' fullData={dataHomePage.specialties} />
             <br />
-            <CategoriesCollection topic='Popular Doctors' data={{ id: 1, image: `/doctor/livestreaming/doctor7.jpg`, isLive: false }} />
+            <CategoriesCollection topic='Popular Doctors' fullData={dataHomePage.doctors} />
             <br />
-            <CategoriesCollection topic='Featured Doctors' data={{ id: 1, image: `/doctor/livestreaming/doctor7.jpg`, isLive: false }} />
+            <CategoriesCollection topic='Featured Doctors' fullData={dataHomePage.doctors} />
             <br />
 
             {/* medicine order */}
-            <CategoriesCollection topic='Medicine Order' data={{ id: 1, image: `/medicine/eye-medicine.jpg`, isLive: false }} />
+            <CategoriesCollection topic='Medicine Order' fullData={dataHomePage.medicines} />
 
           </div>
 
