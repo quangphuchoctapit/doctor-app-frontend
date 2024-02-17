@@ -40,9 +40,20 @@ export const userSlice = createSlice({
                     gender
                 }
             };
+        },
+        editImage: (state, action: PayloadAction<{ id: string, image: string }>) => {
+            const { id, image } = action.payload;
+            return {
+                ...state,
+                value: {
+                    ...state.value,
+                    id,
+                    image
+                }
+            };
         }
     }
 })
 
-export const { loggedIn } = userSlice.actions
+export const { loggedIn, editImage } = userSlice.actions
 export default userSlice.reducer

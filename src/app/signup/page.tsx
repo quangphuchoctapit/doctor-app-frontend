@@ -1,13 +1,16 @@
 'use client'
 import Link from 'next/link'
 import React, { useState, useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { useRouter } from 'next/navigation'
 
 const SignUp = () => {
+    const router = useRouter()
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
     const handleSignUp = async () => {
-        let role = 'U'
+        let role = 'P'
         const response = await fetch(`/api/user/new`, {
             method: "POST",
             body: JSON.stringify({
@@ -15,8 +18,17 @@ const SignUp = () => {
             }),
         });
         if (response.ok) {
-            console.log('okokok', email, password, username);
+            toast.success('Signup successfully');
+            router.push('/login')
+        } else {
+            // let dataServer = await response.json()
+            toast.warning(response.statusText);
+        }
+    }
 
+    const handleEnter = (e: any) => {
+        if (e.keyCode === 13) {
+            handleSignUp()
         }
     }
 
@@ -34,7 +46,7 @@ const SignUp = () => {
                         <label htmlFor="email">Email:</label>
                         <input value={email} onChange={e => setEmail(e.target.value)} className='border outline-none rounded px-3 w-full py-1' type="text" placeholder='durianman@dog.mail' />
                         <label className='mt-3' htmlFor="password">Password:</label>
-                        <input value={password} onChange={e => setPassword(e.target.value)} className='border outline-none rounded px-3 w-full py-1' type="text" placeholder='****' />
+                        <input onKeyDown={(e) => handleEnter(e)} value={password} onChange={e => setPassword(e.target.value)} className='border outline-none rounded px-3 w-full py-1' type="text" placeholder='****' />
                     </div>
                     <div className="flex justify-between gap-2 items-center w-full ">
                         <div className="flex items-center">

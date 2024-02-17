@@ -24,18 +24,23 @@ const page = () => {
             }),
         });
 
-        const dataServer = await response.json()
-        let defaultImage = dataServer.image ? dataServer.image : dataServer.gender === 'male' ? '/user/avatar/user-male.png' : '/user/avatar/user-female.png'
-        const { username, _id, role, gender } = dataServer
         if (response.ok) {
+            const dataServer = await response.json()
+            let defaultImage = dataServer.image ? dataServer.image : dataServer.gender === 'male' ? '/user/avatar/user-male.png' : '/user/avatar/user-female.png'
+            const { username, _id, role, gender } = dataServer
             await dispatch(loggedIn({ email: dataServer.email, username: username, image: defaultImage, id: _id, role: role, gender: gender }))
             router.push('/')
-            // console.log(userRedux);
 
             toast.success('Succesfully logged in')
         }
-        if (response.status === 401) {
+        else if (response.status === 401) {
+            toast.error('Cannot find this user')
             console.log('Cannot find this user');
+        }
+    }
+    const handleEnter = (e: any) => {
+        if (e.keyCode === 13) {
+            handleLogin()
         }
     }
 
@@ -51,7 +56,7 @@ const page = () => {
                         <label htmlFor="email">Email:</label>
                         <input onChange={(e) => { setEmail(e.target.value) }} value={email} className='border outline-none rounded px-3 w-full py-1' type="text" placeholder='durianman@dog.mail' />
                         <label className='mt-3' htmlFor="password">Password:</label>
-                        <input onChange={(e) => { setPassword(e.target.value) }} value={password} className='border outline-none rounded px-3 w-full py-1' type="text" placeholder='****' />
+                        <input onKeyDown={e => handleEnter(e)} onChange={(e) => { setPassword(e.target.value) }} value={password} className='border outline-none rounded px-3 w-full py-1' type="text" placeholder='****' />
                     </div>
                     <div className="flex justify-between gap-2 items-center w-full ">
                         <div className="flex items-center">

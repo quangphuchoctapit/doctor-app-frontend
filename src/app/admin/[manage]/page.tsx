@@ -1,4 +1,11 @@
 'use client'
+import useSWR from 'swr';
+const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    return res.json();
+};
+
+
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import 'react-responsive-modal/styles.css';
@@ -11,6 +18,11 @@ import { FaPlusCircle } from "react-icons/fa";
 
 
 const AdminManagePage = () => {
+
+    // error handling in useswr
+    const [error, setError] = useState(null);
+
+    const [isSelectedUndefinedDoctors, setIsSelectedUndefinedDoctors] = useState(false)
     const userRedux = useSelector((state: RootState) => state.user.value)
     const [currentLoggedInUser, setCurrentLoggedInUser] = useState({
         role: ''
@@ -32,10 +44,16 @@ const AdminManagePage = () => {
     };
 
     const onOpenModalUserAction = () => setIsOpenSetUserActionModal(true);
-    const onCloseModalUserAction = () => setIsOpenSetUserActionModal(false);
+    const onCloseModalUserAction = () => {
+        setIsOpenSetUserActionModal(false)
+
+    };
 
     const onOpenCreateModal = () => setIsOpenCreateModal(true);
-    const onCloseCreateModal = () => setIsOpenCreateModal(false);
+    const onCloseCreateModal = () => {
+        setIsOpenCreateModal(false)
+
+    };
 
     const [dataTable, setDataTable] = useState({
         users: [],
@@ -66,64 +84,65 @@ const AdminManagePage = () => {
     }, [params])
 
 
+    // fetch all users
+    const fetchUsers = async () => {
+        const users = await fetch(`/api/user`)
+        const dataServer = await users.json()
+        setDataTable(prevState => ({
+            ...prevState,
+            users: dataServer
+        }));
+    }
+    // fetch all specialties
+    const fetchSpecialties = async () => {
+        const specialties = await fetch(`/api/specialty`)
+        const dataServer = await specialties.json()
+        setDataTable(prevState => ({
+            ...prevState,
+            specialties: dataServer
+        }));
+    }
+    // fetch all clinics
+    const fetchClinics = async () => {
+        const clinics = await fetch(`/api/clinic`)
+        const dataServer = await clinics.json()
+        setDataTable(prevState => ({
+            ...prevState,
+            clinics: dataServer
+        }));
+    }
+    // fetch all medicines
+    const fetchMedicines = async () => {
+        const medicines = await fetch(`/api/medicine`)
+        const dataServer = await medicines.json()
+        setDataTable(prevState => ({
+            ...prevState,
+            medicines: dataServer
+        }));
+    }
+    // fetch all doctors
+    const fetchDoctors = async () => {
+        const doctors = await fetch(`/api/doctor`)
+        const dataServer = await doctors.json()
+        setDataTable(prevState => ({
+            ...prevState,
+            doctors: dataServer
+        }));
+    }
+    // fetch all locations
+    const fetchLocations = async () => {
+        const locations = await fetch(`/api/location`)
+        const dataServer = await locations.json()
+
+        setDataTable(prevState => ({
+            ...prevState,
+            locations: dataServer
+        }));
+    }
+
     // fetch users/doctors/specialties/doctors/clinics/locations/medicines
     useEffect(() => {
-        // fetch all users
-        const fetchUsers = async () => {
-            const users = await fetch(`/api/user`)
-            const dataServer = await users.json()
-            setDataTable(prevState => ({
-                ...prevState,
-                users: dataServer
-            }));
-        }
 
-        // fetch all specialties
-        const fetchSpecialties = async () => {
-            const specialties = await fetch(`/api/specialty`)
-            const dataServer = await specialties.json()
-            setDataTable(prevState => ({
-                ...prevState,
-                specialties: dataServer
-            }));
-        }
-        // fetch all clinics
-        const fetchClinics = async () => {
-            const clinics = await fetch(`/api/clinic`)
-            const dataServer = await clinics.json()
-            setDataTable(prevState => ({
-                ...prevState,
-                clinics: dataServer
-            }));
-        }
-        // fetch all medicines
-        const fetchMedicines = async () => {
-            const medicines = await fetch(`/api/medicine`)
-            const dataServer = await medicines.json()
-            setDataTable(prevState => ({
-                ...prevState,
-                medicines: dataServer
-            }));
-        }
-        // fetch all doctors
-        const fetchDoctors = async () => {
-            const doctors = await fetch(`/api/doctor`)
-            const dataServer = await doctors.json()
-            setDataTable(prevState => ({
-                ...prevState,
-                doctors: dataServer
-            }));
-        }
-        // fetch all locations
-        const fetchLocations = async () => {
-            const locations = await fetch(`/api/location`)
-            const dataServer = await locations.json()
-
-            setDataTable(prevState => ({
-                ...prevState,
-                locations: dataServer
-            }));
-        }
         fetchUsers()
         fetchSpecialties()
         fetchClinics()
@@ -133,11 +152,63 @@ const AdminManagePage = () => {
     }, [])
 
 
+    // // fetch users using SWR
+    // const { data: userData, error: userFetchError, mutate: mutateUser } = useSWR(`/api/user`, fetcher, {
+    //     revalidateOnFocus: false,
+    //     revalidateOnReconnect: false,
+    //     refreshInterval: 0,
+    //     refreshWhenHidden: false,
+    //     refreshWhenOffline: false,
+    //     dedupingInterval: 5000 // Check for changes every 5 seconds
+    // });
+
+    // useEffect(() => {
+    //     if (userFetchError) {
+    //         setError(userFetchError);
+    //     } else if (userData !== undefined) {
+    //         // Update state when data changes
+    //         setDataTable(prevState => ({
+    //             ...prevState,
+    //             users: userData
+    //         }));
+    //     }
+    // }, [userData]);
+
+    // // Trigger revalidation manually when needed
+    // const handleDataChangeUser = () => {
+    //     mutateUser(); // This will trigger a revalidation of the data
+    // };
+    // useEffect(() => {
+    //     handleDataChangeUser()
+    // }, [userData])
+
+    const fetchDoctorsWithEmptyInfo = async () => {
+        const doctors = await fetch(`/api/doctor/undefined-doctors`)
+        const dataServer = await doctors.json()
+        setIsSelectedUndefinedDoctors(true)
+        setDataTable(prevState => ({
+            ...prevState,
+            doctors: dataServer
+        }));
+    }
+
+    const fetchDoctorsWithFullInfo = async () => {
+        const doctors = await fetch(`/api/doctor`)
+        const dataServer = await doctors.json()
+        setIsSelectedUndefinedDoctors(false)
+        setDataTable(prevState => ({
+            ...prevState,
+            doctors: dataServer
+        }));
+    }
+
     return (
         <div className='min-h-screen w-full bg-gradient-to-bl from-lime-200 via-white to-orange-200 text-black'>
             <div className="flex flex-col gap-5 text-black mx-5">
                 <h1 className=' text-xl font-bold text-center my-5'>Manage {manageAction}</h1>
-
+                {params.manage === 'doctors' &&
+                    <div onClick={!isSelectedUndefinedDoctors ? fetchDoctorsWithEmptyInfo : fetchDoctorsWithFullInfo} className="text-green-700 underline">{!isSelectedUndefinedDoctors ? 'Doctors with empty info' : 'Doctors with full Info'}</div>
+                }
                 {/* filter & search users */}
                 <div className="w-full p-3 shadow-lg border rounded-md bg-white">
                     <div className="grid sm:grid-cols-2 gap-5 ">
@@ -185,6 +256,13 @@ const AdminManagePage = () => {
                                 onOpenModalUserAction={onOpenModalUserAction}
                                 dataTable={dataTable}
                                 isAdmin={currentLoggedInUser.role === 'SA' ? true : false}
+                                refetch={{
+                                    users: fetchUsers,
+                                    doctors: fetchDoctors,
+                                    clinics: fetchClinics,
+                                    medicines: fetchMedicines,
+                                    specialties: fetchSpecialties
+                                }}
                             />
                         </tbody>
                     </table>
@@ -214,7 +292,13 @@ const AdminManagePage = () => {
                         <div className="text-black p-3 flex flex-col gap-4">
                             <h2 className='my-4 text-lg font-bold text-center'>Add {params.manage}</h2>
                             {/* {DisplayModalAddNew(params.manage, (currentLoggedInUser.role === 'SA' ? true : false), dataInputModalCreate, setDataInputModalCreate)} */}
-                            <DisplayModalAddNew value={params.manage} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} dataTable={dataTable} />
+                            <DisplayModalAddNew value={params.manage} isAdmin={currentLoggedInUser.role === 'SA' ? true : false} dataTable={dataTable} close={onCloseCreateModal} refetch={{
+                                users: fetchUsers,
+                                doctors: fetchDoctors,
+                                clinics: fetchClinics,
+                                medicines: fetchMedicines,
+                                specialties: fetchSpecialties
+                            }} />
                         </div>
                     </Modal>
                 </div>

@@ -80,7 +80,7 @@ const displayTableHeader = (value, isAdmin) => {
     }
 }
 
-const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin }) => {
+const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin, refetch }) => {
     const [isOpenModalSetRoleUser, setIsOpenModalSetRoleUser] = useState(false)
     const onCloseModalSetRoleUser = () => setIsOpenModalSetRoleUser(false)
     const onOpenModalSetRoleUser = () => setIsOpenModalSetRoleUser(true)
@@ -116,7 +116,8 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
             .then(response => {
                 // Check if the response status is ok (2xx)
                 if (response.ok) {
-                    console.log('User role updated successfully');
+                    refetch.users()
+                    onCloseModalSetRoleUser()
                     // Handle successful response
                 } else {
                     console.error('Error updating user role:', response.statusText);
@@ -128,7 +129,6 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                 // Handle network error
             });
     }
-
     // build data for react-select
     const buildDataOptions = (value) => {
         const options = []
@@ -154,7 +154,6 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
         setDataLocations(locationsData)
         setDataClinics(clinicsData)
     }, [dataTable])
-
 
     switch (value) {
         case 'users':
@@ -232,7 +231,13 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
         case 'doctors':
             const [isOpenModalEditDoctor, setIsOpenModalEditDoctor] = useState(false)
             const onOpenModalEditDoctor = () => setIsOpenModalEditDoctor(true)
-            const onCloseModalEditDoctor = () => setIsOpenModalEditDoctor(false)
+            const onCloseModalEditDoctor = () => {
+                setIsOpenModalEditDoctor(false)
+                setDoctorDescription('')
+                setSelectedLocationModalDoctorInfo('')
+                setSelectedClinicModalDoctorInfo('')
+                setSelectedPriceModalDoctorInfo('')
+            }
             const [currentSelectedDoctorId, setCurrentSelectedDoctorId] = useState('')
             const [doctorDescription, setDoctorDescription] = useState('')
             const [selectedFileImage, setSelectedFileImage] = useState(null);
@@ -286,13 +291,16 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                         })
                     }
                 )
-                let dataServer = await response.json()
-                console.log(dataServer)
+                if (response.ok) {
+                    let dataServer = await response.json()
+                    refetch.doctors()
+                    onCloseModalEditDoctor()
+                }
             }
 
             return (
                 <>
-                    {dataTable.doctors.map((item, index) => (
+                    {dataTable?.doctors === undefined ? <tr><td>All of doctors Info are set</td></tr> : Array.isArray(dataTable.doctors) && dataTable.doctors.length > 0 ? dataTable?.doctors?.map((item, index) => (
                         <tr onClick={() => { onOpenModalEditDoctor(), setCurrentSelectedDoctorId(item._id) }} key={item._id}>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <img src={item.image} alt={item.name} className='w-8 h-8 object-cover' />
@@ -308,7 +316,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
                             <td className="px-6 py-4 whitespace-nowrap">{item?.doctorInfo?.clinic?.name || 'doctor clinic'}</td>
 
                         </tr>
-                    ))}
+                    )) : <tr><td>No doctors found</td></tr>}
                     <Modal open={isOpenModalEditDoctor} onClose={onCloseModalEditDoctor} center>
                         <div className="text-black p-3 flex flex-col gap-4">
                             <h2 className='my-4 text-lg font-bold text-center'>Set Doctor Info</h2>
@@ -405,7 +413,7 @@ const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, isAdmin 
 
 
 // modal add new
-const DisplayModalAddNew = ({ value, isAdmin, dataTable }) => {
+const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
     const [selectedFileImage, setSelectedFileImage] = useState(null);
     const [base64String, setBase64String] = useState('');
     const handleFileChange = (event) => {
@@ -481,7 +489,11 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable }) => {
                 description, image: base64String, name
             }),
         });
-        const dataServer = await response.json()
+        if (response.ok) {
+            const dataServer = await response.json()
+            refetch.specialties()
+            close()
+        }
     }
 
     const handleAddClinic = async () => {
@@ -491,7 +503,11 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable }) => {
                 description, image: base64String, name, location, brandOwner, type: selectedSpecialtyModalDoctorInfo.value
             }),
         });
-        const dataServer = await response.json()
+        if (response.ok) {
+            const dataServer = await response.json()
+            refetch.clinics()
+            close()
+        }
     }
 
     const handleAddMedicine = async () => {
@@ -504,7 +520,11 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable }) => {
                 type, unit
             }),
         });
-        const dataServer = await response.json()
+        if (response.ok) {
+            const dataServer = await response.json()
+            refetch.medicines()
+            close()
+        }
     }
 
     const handleOnChangeInput = (e, value) => {

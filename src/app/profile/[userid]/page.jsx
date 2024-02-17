@@ -1,11 +1,14 @@
 'use client'
+import { editImage } from '@/app/redux/features/user/userSlice';
 import { useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 import { CiCamera } from "react-icons/ci";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 const Profile = () => {
+    const dispatch = useDispatch()
+
     const params = useParams()
     const userRedux = useSelector((state) => state.user.value)
     const defaultUserProfile = {
@@ -39,6 +42,7 @@ const Profile = () => {
                     }
                 });
                 const dataServer = await response.json();
+                dispatch(editImage({ id: userProfile.id, image: base64 }))
             };
             reader.readAsDataURL(file); // Convert the file to base64
         }

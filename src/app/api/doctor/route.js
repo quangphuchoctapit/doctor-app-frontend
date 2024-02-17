@@ -6,11 +6,6 @@ import DoctorInfo from "../../../models/doctorInfo"
 export const GET = async (req, res) => {
     try {
         await connectToDB()
-        // const existingDoctors = await User.find({ role: 'D' }).populate('doctorId');
-        // const usersWithDoctorInfo = await User.find({ role: 'D' }).populate({
-        //     path: 'doctorId',
-        //     model: 'DoctorInfo'
-        // });
         const usersWithDoctorInfo = await User.aggregate([
             { $match: { role: 'D' } },
             {
@@ -73,21 +68,7 @@ export const GET = async (req, res) => {
                 }
             }
         ]);
-        if (usersWithDoctorInfo.length === 0) {
-            const existingDoctor = await User.find({ role: 'D' }, { password: 0 });
-            if (existingDoctor) {
-                return new Response(JSON.stringify(existingDoctor), {
-                    status: 201,
-                    code: 0
-                })
-            }
-            return new Response('cannot find User with role "Doctor"', {
-                status: 401,
-                code: 1
-            })
-        }
         if (usersWithDoctorInfo) {
-
             return new Response(JSON.stringify(usersWithDoctorInfo), {
                 status: 201,
                 code: 0
@@ -99,7 +80,7 @@ export const GET = async (req, res) => {
         })
     } catch (e) {
         console.log(e)
-        return new Response('Failed to login', {
+        return new Response('Failed to load doctors', {
             status: 500,
             code: 2
         })

@@ -5,9 +5,6 @@ import User from "../../../models/user"
 //login
 export const POST = async (req, res) => {
     const { email, password } = await req.json()
-    const checkUser = new User({
-        email, password
-    })
     try {
         await connectToDB()
         const existingUser = await User.findOne({ email, password }, { password: 0 });
