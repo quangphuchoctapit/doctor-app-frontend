@@ -5,13 +5,19 @@ import { useState, useEffect } from 'react'
 import { FaHeart } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 
-
 const Appointment = () => {
     const params = useParams()
     const defaultDataDoctor = {
         username: '', id: ''
     }
-    const [dataDoctor, setDataDoctor] = useState([])
+    const [dataDoctor, setDataDoctor] = useState<{
+        username: string, image?: string, doctorInfo: {
+            specialty?: {
+                name?: string
+            },
+            price?: number
+        }
+    } | null>(null)
 
     useEffect(() => {
         const fetchDoctorDetail = async () => {
@@ -33,20 +39,19 @@ const Appointment = () => {
         }
         fetchDoctorDetail()
     }, [params.doctorId])
-    console.log(dataDoctor);
 
     return (
         <div className='bg-gradient-to-br from-blue-200 via-white to-green-200 w-full'>
             <div className="flex flex-col gap-5 mx-auto container py-5">
                 {/* intro */}
                 <div className="shadow-lg border rounded-lg bg-white p-3 flex flex-col">
-                    <div className="grid grid-cols-3 gap-3 text-black">
-                        <div className="col-span-1">
+                    <div className="grid grid-cols-12 gap-3 text-black">
+                        <div className="col-span-2">
                             <div className=" border w-20 sm:h-32 h-20 sm:w-32 gap-3">
                                 <img src={dataDoctor?.image} alt="" className='w-full h-full object-cover' />
                             </div>
                         </div>
-                        <div className="col-span-2 flex gap-3 justify-between">
+                        <div className="col-span-10 flex gap-3 justify-between">
                             <div className="flex flex-col ">
                                 <h3 className='sm:text-lg font-bold'>Dr.{dataDoctor?.username}</h3>
                                 <p className='text-gray-400 max-sm:text-xs'>{dataDoctor?.doctorInfo?.specialty?.name}</p>
@@ -56,7 +61,7 @@ const Appointment = () => {
                             </div>
                             <div className="flex flex-col justify-between items-end">
                                 <div className="max-sm:text-sm text-red-400"><FaHeart /></div>
-                                <div className="max-sm:text-xs flex items-center gap-1"><span className='text-green-500'>${' '}</span>{dataDoctor?.doctorInfo?.price}/hour</div>
+                                <div className="max-sm:text-xs flex items-center gap-1"><span className='text-green-500'>${dataDoctor?.doctorInfo?.price}</span>/hour</div>
                             </div>
                         </div>
                     </div>

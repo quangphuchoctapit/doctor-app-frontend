@@ -118,7 +118,6 @@ const Home = () => {
 
             {/* medicine order */}
             <CategoriesCollection topic='Medicine Order' fullData={dataHomePage.medicines} />
-
           </div>
 
         </div>

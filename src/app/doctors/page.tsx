@@ -3,9 +3,29 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react'
 import { FaRegHeart } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../redux/Store';
+import { inputSearchDoctors, addListDoctors, handleSearchResultDoctors } from '../redux/features/search/searchSlice';
 
 const DoctorsPage = () => {
+    const searchQuery = useSelector((state: RootState) => state.search.doctors.query)
+    const listDoctors = useSelector((state: RootState) => state.search.doctors.listDoctors)
+    const resultSearch = useSelector((state: RootState) => state.search.doctors.resultSearch)
+
     const [allDoctors, setAllDoctors] = useState([])
+
+    useEffect(() => {
+        dispatch(addListDoctors({ listDoctors: allDoctors }));
+    }, [allDoctors])
+
+    const dispatch = useDispatch()
+
+    const [queryReact, setQueryReact] = useState('')
+    const handleOnChangeQueryReact = (e: string) => {
+        setQueryReact(e)
+        dispatch(inputSearchDoctors({ query: e }))
+        dispatch(handleSearchResultDoctors())
+    }
     useEffect(() => {
         // fetch all doctors
         const fetchDoctors = async () => {
@@ -16,14 +36,26 @@ const DoctorsPage = () => {
         fetchDoctors()
     }, [])
 
+    // console.log(allDoctors)
     return (
         <div className='w-full min-h-screen bg-gradient-to-br from-lime-200 via-white to-cyan-200'>
             <div className="container mx-auto flex flex-col items-center text-black">
-                <div className="my-5 bg-white shadow-lg border rounded-md w-full p-3 ">
+                <div className="my-5 bg-white shadow-lg border rounded-md w-full p-3 relative">
                     <h2 className='text-lg font-bold my-5'>Find Doctors</h2>
-                    <input type="text" className='w-full px-3 py-2 border border-gray-800 bg-white outline-none rounded-md' placeholder='Search doctor' />
+                    <input value={queryReact} onChange={e => handleOnChangeQueryReact(e.target.value)} type="text" className='w-full px-3 py-2 border border-gray-800 bg-white outline-none rounded-md' placeholder='Search doctor' />
+                    {queryReact.length > 0 && (
+                        <div className="absolute w-full mt-1 bg-white border overflow-auto border-gray-300 rounded-md shadow-lg max-h-32">
+                            {/* Content inside the responsive div */}
+                            {resultSearch.map((doctor) => (
+                                <div key={doctor._id} className='px-3 py-1'>
+                                    {/* Render doctor information here */}
+                                    {doctor?.username}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
-                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {allDoctors?.map((item: any, index) => (
                         <div key={item._id} className=" bg-white shadow-lg border rounded-md w-full p-3 flex flex-col gap-3">
                             <div className="flex grow gap-3">
@@ -55,7 +87,7 @@ const DoctorsPage = () => {
                                     <p><span className='font-semibold'>10:00</span> AM tomorrow</p>
                                 </div>
                                 <div className="w-full">
-                                    <Link href='/doctor/3' className='bg-green-600 text-white rounded-lg px-3 py-2'>Book Now</Link>
+                                    <Link href={`/doctor/${item._id}`} className='bg-green-600 text-white rounded-lg px-3 py-2'>Book Now</Link>
                                 </div>
                             </div>
                         </div>

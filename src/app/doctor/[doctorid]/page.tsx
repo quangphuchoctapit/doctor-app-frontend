@@ -5,12 +5,20 @@ import { useState, useEffect } from 'react'
 import { FaHeart } from "react-icons/fa";
 import { FaStar } from "react-icons/fa";
 
+
 const DoctorDetail = () => {
     const params = useParams()
     const defaultDataDoctor = {
         username: '', id: ''
     }
-    const [dataDoctor, setDataDoctor] = useState([])
+    const [dataDoctor, setDataDoctor] = useState<{
+        image?: string, username: string, doctorInfo?: {
+            specialty?: {
+                name?: string
+            },
+            price?: number
+        }
+    } | null>(null)
 
     useEffect(() => {
         const fetchDoctorDetail = async () => {

@@ -1,6 +1,7 @@
 import { configureStore, combineReducers, Reducer } from '@reduxjs/toolkit';
 import userReducer, { userState } from './features/user/userSlice';
 import counterReducer, { CounterState } from './features/counter/counterSlice';
+import searchReducer, { SearchState } from './features/search/searchSlice';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
@@ -9,6 +10,7 @@ import storage from 'redux-persist/lib/storage';
 export interface RootState {
     user: userState;
     counter: CounterState;
+    search: SearchState
 }
 
 // Configure persistence for the root reducer
@@ -21,7 +23,8 @@ const persistConfig = {
 // Combine reducers
 const rootReducer: Reducer<RootState> = combineReducers({
     user: userReducer,
-    counter: counterReducer
+    counter: counterReducer,
+    search: searchReducer
 });
 
 // Wrap the root reducer with redux-persist's persistReducer

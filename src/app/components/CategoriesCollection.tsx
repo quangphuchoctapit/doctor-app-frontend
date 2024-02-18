@@ -1,7 +1,11 @@
+'use client'
 import React, { useState, useEffect } from 'react'
 import { CgMediaLive } from "react-icons/cg";
 import { useRouter } from 'next/navigation'; // Corrected import statement
 import { FaStar } from "react-icons/fa";
+import { RootState } from '../redux/Store';
+import { useSelector, useDispatch } from 'react-redux';
+import { addListMedicines, handleSearchResultMedicines, inputSearchMedicines } from '../redux/features/search/searchSlice';
 
 interface ICategoriesCollectionProps {
     topic: string;
@@ -21,6 +25,7 @@ interface ICategoriesCollectionProps {
             price?: number
         }
         username?: string
+        price?: number
     }[];
     isLive?: boolean
 }
@@ -29,6 +34,32 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
     const router = useRouter(); // Changed let to const for router
     const [selectedDoctorId, setSelectedDoctorId] = useState('')
     const [selectedMedicineId, setSelectedMedicineId] = useState('')
+
+    const [querySearchMedicine, setQuerySearchMedicine] = useState('')
+    const searchQuery = useSelector((state: RootState) => state.search.medicines.query)
+    const listMedicines = useSelector((state: RootState) => state.search.medicines.listMedicines)
+    const resultSearch = useSelector((state: RootState) => state.search.medicines.resultSearch)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        const fetchMedicines = async () => {
+            const medicines = await fetch(`/api/medicine`)
+            const dataServer = await medicines.json()
+            dispatch(addListMedicines({ listMedicines: dataServer }))
+        }
+        fetchMedicines()
+    }, [])
+
+    const handleOnChangeQuerySearchMedicine = (e: string) => {
+        setQuerySearchMedicine(e)
+        dispatch(inputSearchMedicines({ query: e }))
+        dispatch(handleSearchResultMedicines())
+    }
+    console.log(resultSearch);
+
+
+
+
 
     const sizeCards = () => {
         let size = '';
@@ -94,8 +125,19 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
                 <div className="text-gray-400">See All</div>
             </div>
             {topic === 'Medicine Order' &&
-                <div className='w-full'>
-                    <input className='px-4 py-2 bg-white border border-gray-400 outline-none w-full rounded-md' type="text" placeholder='Search ' />
+                <div className='w-full relative'>
+                    <input value={querySearchMedicine} onChange={e => handleOnChangeQuerySearchMedicine(e.target.value)} className='px-4 py-2 bg-white border border-gray-400 outline-none w-full rounded-md' type="text" placeholder='Search ' />
+                    {querySearchMedicine.length > 0 && (
+                        <div className="absolute w-full mt-1 z-10 bg-white border overflow-auto border-gray-300 rounded-md shadow-lg max-h-32">
+                            {/* Content inside the responsive div */}
+                            {resultSearch.map((medicine) => (
+                                <div key={medicine._id} className='px-3 py-1'>
+                                    {/* Render medicine information here */}
+                                    {medicine?.name}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             }
             <div className="overflow-x-auto flex gap-3 items-center">
@@ -135,8 +177,8 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
                         }
                         {topic === 'Medicine Order' &&
                             <div className="flex flex-col items-center ">
-                                <div className="whitespace-nowrap text-sm font-bold ">Optical Supplement</div>
-                                <div className="text-sm text-gray-500"><span className='text-green-500'>$</span>25.00/serving</div>
+                                <div className="whitespace-nowrap text-sm font-bold ">{item?.name}</div>
+                                <div className="text-sm text-gray-500"><span className='text-green-500'>${item?.price}</span>/serving</div>
                             </div>
                         }
                     </div>
