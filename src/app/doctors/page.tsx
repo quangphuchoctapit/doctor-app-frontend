@@ -82,11 +82,11 @@ const DoctorsPage = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 justify-between">
-                                <div className="flex flex-col gap-1 grow max-sm:text-xs">
+                                <div className="flex basis-3/5 flex-col gap-1 grow">
                                     <h5 className='text-green-500'>Next Available</h5>
                                     <p><span className='font-semibold'>10:00</span> AM tomorrow</p>
                                 </div>
-                                <div className="w-full">
+                                <div className="w-full basis-2/5">
                                     <Link href={`/doctor/${item._id}`} className='bg-green-600 text-white rounded-lg px-3 py-2'>Book Now</Link>
                                 </div>
                             </div>

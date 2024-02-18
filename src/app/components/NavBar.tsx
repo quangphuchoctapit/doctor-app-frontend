@@ -11,12 +11,13 @@ const NavBar = () => {
     const [userImg, setUserImg] = useState('')
     const [username, setUsername] = useState('')
     const [userId, setUserId] = useState('')
-
+    const [userRole, setUserRole] = useState('')
 
     useEffect(() => {
         setUserImg(userRedux.image)
         setUsername(userRedux.username)
         setUserId(userRedux.id)
+        setUserRole(userRedux.role)
     }, [userRedux])
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenDropdownUser, setIsOpenDropdownUser] = useState(false)
@@ -52,7 +53,10 @@ const NavBar = () => {
                             </div>
                         )}
                     </div>
-                    <Link href="/doctor-services" className="text-white mr-4 hidden sm:block hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Doctor</Link>
+
+                    {userRole === 'D' &&
+                        <Link href="/doctor-services" className="text-white mr-4 hidden sm:block hover:bg-gray-300 px-4 py-3 hover:duration-200 hover:text-black">Doctor</Link>
+                    }
 
                 </div>
 

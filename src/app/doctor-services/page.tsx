@@ -1,28 +1,88 @@
 'use client'
 import Link from 'next/link';
-import { useState } from 'react'
-import { FaHeart } from "react-icons/fa";
+import { useState, useEffect } from 'react'
+import { FaHeart, FaStar } from "react-icons/fa";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import 'react-responsive-modal/styles.css';
+import { format } from 'date-fns';
 import { Modal } from 'react-responsive-modal';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../redux/Store';
+import { addListMedicines, handleSearchResultMedicines, inputSearchMedicines } from '../redux/features/search/searchSlice';
 
 const DoctorServices = () => {
-    const [date, setDate] = useState(new Date());
+    const dispatch = useDispatch()
 
-    const onChange = (newDate: any) => {
-        setDate(newDate);
+    // set calendar
+    const [dateCalendar, setDatecalendar] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState('')
+    const onChangeDate = (newDate: any) => {
+        setDatecalendar(newDate);
     };
+    const formatDate = (date: Date) => {
+        return format(date, 'yyyy-MM-dd'); // Customize the format as needed
+    };
+
+    useEffect(() => {
+        const formattedDate = formatDate(dateCalendar);
+        setSelectedDate(formattedDate)
+    }, [onChangeDate])
+
+    // modal patient handling
+    const [isOpenPatientModal, setIsOpenPatientModal] = useState<boolean>(false)
+    const setOpenPatientModal = () => setIsOpenPatientModal(true);
+    const onClosePatientModal = () => setIsOpenPatientModal(false);
+
+
+    // search medicines for modal patient waiting list
+    const searchQuery = useSelector((state: RootState) => state.search.medicines.query)
+    const listMedicines = useSelector((state: RootState) => state.search.medicines.listMedicines)
+    const resultSearch = useSelector((state: RootState) => state.search.medicines.resultSearch)
+    const [queryMedicineSearch, setQueryMedicineSearch] = useState('')
+    const handleOnChangeMedicineQuery = (e: string) => {
+        setQueryMedicineSearch(e)
+        dispatch(inputSearchMedicines({ query: e }))
+        dispatch(handleSearchResultMedicines())
+    }
+
+    // fetch doctor of this page
+    useEffect(() => {
+        // fetch all doctors
+        const fetchDoctors = async () => {
+            const medicines = await fetch(`/api/medicine`)
+            const dataServer = await medicines.json()
+            dispatch(addListMedicines({ listMedicines: dataServer }))
+        }
+        fetchDoctors()
+    }, [])
+    const [dataDoctor, setDataDoctor] = useState<{ doctorInfo?: { specialty?: { name?: string }, price?: number, description?: string }, username?: string, image?: string }>()
+    const userRedux = useSelector((state: RootState) => state.user.value)
+    useEffect(() => {
+        const fetchDoctorDetail = async () => {
+            let id = userRedux.id
+            const response = await fetch(`/api/doctor/${id}`, {
+                method: "POST",
+                body: JSON.stringify({
+                    id: userRedux.id
+                }),
+            });
+            if (response.ok) {
+                let dataServer = await response.json()
+                setDataDoctor(dataServer)
+                const newData = dataServer.filter((item: any, index: any) => {
+                    return item._id === userRedux.id
+                })
+                setDataDoctor(newData[0])
+            }
+        }
+        fetchDoctorDetail()
+    }, [userRedux])
 
     const [isopenDropdownMedicineFilter, setIsOpenDropdownMedicineFilter] = useState<boolean>(false)
     const toggleDropdownMedicineFilter = () => {
         setIsOpenDropdownMedicineFilter(!isopenDropdownMedicineFilter);
     };
-
-    const [isOpenPatientModal, setIsOpenPatientModal] = useState<boolean>(false)
-    const setOpenPatientModal = () => setIsOpenPatientModal(true);
-    const onClosePatientModal = () => setIsOpenPatientModal(false);
-
 
     return (
         <div className='w-full min-h-screen bg-gradient-to-tr via-white from-blue-200 to-cyan-200'>
@@ -33,17 +93,21 @@ const DoctorServices = () => {
                     {/* intro */}
                     <div className="grid grid-cols-6 gap-3 text-black">
                         <div className="col-span-1">
-                            <div className=" border w-16 sm:h-24 md:w-32 h-16 sm:w-24 md:h-32 gap-3"></div>
+                            <div className=" border w-16 sm:h-24 md:w-32 h-16 sm:w-24 md:h-32 gap-3">
+                                <img src={dataDoctor?.image} className='w-full h-full object-cover' alt="" />
+                            </div>
                         </div>
                         <div className="col-span-5 px-4 flex gap-3 justify-between">
                             <div className="flex flex-col ">
-                                <h3 className='sm:text-lg font-bold'>Dr Dog</h3>
-                                <p className='text-gray-400 max-sm:text-xs'>Specialist Cardiologist</p>
-                                <div className="max-sm:text-sm">1 2 3 4 5</div>
+                                <h3 className='sm:text-lg font-bold'>Dr.{dataDoctor?.username}</h3>
+                                <p className='text-gray-400 max-sm:text-xs'>{dataDoctor?.doctorInfo?.specialty?.name}</p>
+                                <div className="max-sm:text-sm flex items-center gap-1 mt-5">
+                                    <FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} />
+                                </div>
                             </div>
                             <div className="flex flex-col justify-between items-end">
                                 <div className="max-sm:text-xs text-red-400"><FaHeart /></div>
-                                <div className="max-sm:text-xs flex items-center gap-1"><span className='text-green-500'>${' '}</span>2212/hour</div>
+                                <div className="max-sm:text-xs flex items-center gap-1"><span className='text-green-500'>${dataDoctor?.doctorInfo?.price}</span>/hour</div>
                             </div>
                         </div>
                     </div>
@@ -58,7 +122,7 @@ const DoctorServices = () => {
                         <div className="w-full flex flex-col gap-2 ">
                             <label className='text-lg font-semibold' htmlFor="description">Description</label>
                             <div className="flex items-center justify-between p-3 border">
-                                <textarea name="" id="description" value='doctor description abcabcabcabc' onChange={() => { }}></textarea>
+                                <textarea value={dataDoctor?.doctorInfo?.description} name="" id="description" onChange={() => { }}></textarea>
                                 <div className="">Edit</div>
                             </div>
                         </div>
@@ -70,7 +134,7 @@ const DoctorServices = () => {
                     <div className="bg-white shadow-lg border p-3 gap-3 rounded-md flex flex-col whitespace-nowrap overflow-x-auto">
                         <h3 className='text-lg font-semibold'>Schedule</h3>
                         <div className='my-3 flex justify-center'>
-                            <Calendar onChange={onChange} value={date} />
+                            <Calendar onChange={onChangeDate} value={dateCalendar} />
                         </div>
                         <div className="flex items-center gap-3">
                             <div className="p-3 rounded-lg bg-green-700 border border-green-700 text-white px-3 py-1">7:00</div>
@@ -142,7 +206,20 @@ const DoctorServices = () => {
                                             <textarea onChange={() => { }} className='w-full lg:min-w-[700px] sm:min-w-[500px] bg-green-100 text-black border px-3 py-1' value={`My stomach hurts, I always have the feeling to vomit at any given time, I have frequent urge to burp, but that's too much.`}></textarea>
                                         </div>
                                         <div className="border p-3 bg-white rounded-lg flex flex-col gap-3 ">
-                                            <input type="text" placeholder='Search Medicine...' className='outline-none border border-gray-700 px-3 py-1 rounded-lg' />
+                                            <div className="relative">
+                                                <input onChange={e => handleOnChangeMedicineQuery(e.target.value)} value={queryMedicineSearch} type="text" placeholder='Search Medicine...' className='outline-none border border-gray-700 px-3 py-1 rounded-lg' />
+                                                {queryMedicineSearch.length > 0 && (
+                                                    <div className="absolute overflow-auto z-10 w-full mt-1 bg-white border-2 border-gray-300 rounded-md shadow-lg max-h-32">
+                                                        {/* Content inside the responsive div */}
+                                                        {resultSearch.map((medicine) => (
+                                                            <div key={medicine._id} className='px-3 py-1'>
+                                                                {/* Render medicine information here */}
+                                                                {medicine?.name}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                             <div className="flex flex-col gap-3">
                                                 <div className="flex justify-between items-center ">
                                                     <h3 className='font-bold'>Filter</h3>

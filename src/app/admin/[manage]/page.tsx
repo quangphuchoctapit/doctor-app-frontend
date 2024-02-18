@@ -11,7 +11,9 @@ import { useParams } from 'next/navigation'
 import 'react-responsive-modal/styles.css';
 import { Modal } from 'react-responsive-modal';
 import { roles } from '../../../data/role-action-permissions/role-action-permissions.js'
-import { displayTableHeader, DisplayTableContent, DisplayModalAddNew } from './structureData.jsx'
+import { DisplayModalAddNew } from './ModalAddNew.jsx'
+import { DisplayTableHeader } from './TableHeader.jsx'
+import { DisplayTableContent } from './TableContent.jsx'
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../..//app/redux/Store'
 import { FaPlusCircle } from "react-icons/fa";
@@ -247,7 +249,7 @@ const AdminManagePage = () => {
                 <div className="w-full p-3 rounded-md overflow-x-auto bg-white shadow-lg border">
                     <table className="table-auto min-w-full divide-y divide-gray-200">
                         <thead>
-                            {displayTableHeader(params.manage,
+                            {DisplayTableHeader(params.manage,
                                 (currentLoggedInUser.role === 'SA' ? true : false))
                             }
                         </thead>

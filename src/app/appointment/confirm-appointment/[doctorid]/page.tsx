@@ -15,7 +15,7 @@ const ConfirmAppointment = () => {
                 <div className='mx-5 lg:grid lg:grid-cols-3 gap-5'>
                     <div className="">
                         <h1 className='text-xl my-3 font-bold'>Choose a date</h1>
-                        <div>
+                        <div className=''>
                             <Calendar onChange={onChange} value={date} />
                         </div>
                     </div>
