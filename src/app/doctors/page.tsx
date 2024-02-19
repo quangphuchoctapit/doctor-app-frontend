@@ -36,6 +36,9 @@ const DoctorsPage = () => {
         fetchDoctors()
     }, [])
 
+    console.log(allDoctors);
+
+
     // console.log(allDoctors)
     return (
         <div className='w-full min-h-screen bg-gradient-to-br from-lime-200 via-white to-cyan-200'>

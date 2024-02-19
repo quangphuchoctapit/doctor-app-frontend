@@ -1,14 +1,14 @@
 import { connectToDB } from "../../../../../utils/database"
-import DoctorInfo from "../../../../models/doctorinfo"
+import DoctorInfo from "../../../../models/DoctorInfo"
 
 export const POST = async (req, res) => {
-    const { doctorId, locationId, description, price, clinicId, specialtyId } = await req.json()
+    const { doctorId, locationId, description, price, clinicId, specialtyId, listSchedule } = await req.json()
     try {
         await connectToDB()
         const updateOrCreateDoctorInfo = await DoctorInfo.findOneAndUpdate(
             { doctorId: doctorId },
             // Update operations
-            { $set: { locationId: locationId, description: description, price: price, clinicId, specialtyId } },
+            { $set: { locationId: locationId, description: description, price: price, clinicId, specialtyId, listSchedule: listSchedule } },
             // Options
             { upsert: true, returnOriginal: false }
         )

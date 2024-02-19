@@ -159,19 +159,18 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
         case 'doctors':
             // set calendar
             const [dateCalendar, setDatecalendar] = useState(new Date());
-            const [selectedDate, setSelectedDate] = useState('')
-            const onChangeDate = (newDate) => {
-                setDatecalendar(newDate);
-            };
             const formatDate = (date) => {
                 return format(date, 'yyyy-MM-dd'); // Customize the format as needed
             };
+            const tileDisabled = ({ activeStartDate, date, view }) => {
+                return date < new Date()
+            }
+            const [selectedDate, setSelectedDate] = useState('')
 
-            useEffect(() => {
-                const formattedDate = formatDate(dateCalendar);
-                setSelectedDate(formattedDate)
-            }, [onChangeDate])
-
+            const [listScheduleDates, setListScheduleDates] = useState([])
+            const onChangeDate = (newDate) => {
+                setDatecalendar(newDate);
+            };
 
             // selected Time for each date
             const [listSelectedTime, setListSelectedTime] = useState([])
@@ -184,14 +183,66 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                     setListSelectedTime([...listSelectedTime, timeInput])
                 }
             }
-            console.log(selectedDate);
+
+            useEffect(() => {
+                const formattedDate = formatDate(dateCalendar);
+                setSelectedDate(formattedDate)
+            }, [dateCalendar])
+
+            useEffect(() => {
+                // Check if selectedDate matches any date in listScheduleDates
+                const isSelectedDateInList = listScheduleDates.some(dateData => dateData.date === selectedDate);
+
+                // If selectedDate is not in listScheduleDates, clear listSelectedTime
+                if (!isSelectedDateInList) {
+                    setListSelectedTime([]);
+                } else {
+                    // Find the corresponding listSelectedTime for the selectedDate
+                    const correspondingListSelectedTime = listScheduleDates.find(dateData => dateData.date === selectedDate)?.scheduleTimes || [];
+                    setListSelectedTime(correspondingListSelectedTime);
+                }
+
+                // If the user clicked the same date again, do nothing
+                if (isSelectedDateInList) {
+                    return;
+                }
+
+                // Remove any empty date entries
+                const newListScheduleDates = listScheduleDates.filter(dateData => dateData.date !== '');
+
+                // Add the selected date along with its schedule times to the list
+                const newObj = {
+                    date: selectedDate,
+                    scheduleTimes: listSelectedTime
+                };
+                setListScheduleDates([...newListScheduleDates, newObj]);
+            }, [selectedDate]);
 
 
 
+            useEffect(() => {
+                // Map through listScheduleDates and update each item's scheduleTimes
+                const updatedListScheduleDates = listScheduleDates.map(dateData => {
+                    // If the date matches the selectedDate, update its scheduleTimes with listSelectedTime
+                    if (dateData.date === selectedDate) {
+                        return {
+                            ...dateData,
+                            scheduleTimes: listSelectedTime
+                        };
+                    }
+                    return dateData; // Otherwise, return the unchanged dateData
+                });
+
+                // Update listScheduleDates with the modified array
+                setListScheduleDates(updatedListScheduleDates);
+            }, [listSelectedTime]);
 
 
 
-
+            // listSchedule = [
+            //     { date: '2024-02-19', scheduleTimes: [{ id: 7, label: '7:00' }, { id: 8, label: '8:00' }] },
+            //     { date: '2024-02-20', scheduleTimes: [{ id: 7, label: '7:00' }, { id: 9, label: '9:00' }] },
+            // ]
 
 
 
@@ -313,6 +364,7 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                             specialtyId: selectedSpecialtyModalDoctorInfo.value,
                             description: doctorDescription, price: selectedPriceModalDoctorInfo.value,
                             clinicId: selectedClinicModalDoctorInfo.value,
+                            listSchedule: listScheduleDates
                         })
                     }
                 )
@@ -373,7 +425,7 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                                     <textarea value={doctorDescription} onChange={e => handleChangeDoctorDescription(e.target.value)} placeholder='description' className='px-4 py-2 rounded-md outline-none border ' />
                                 </div>
                                 <div className="col-span-3 flex justify-between items-center">
-                                    <Calendar onChange={onChangeDate} value={dateCalendar} />
+                                    <Calendar tileDisabled={tileDisabled} onChange={onChangeDate} value={dateCalendar} />
                                     <div className="grid grid-cols-2 gap-3">
                                         {hoursArray.map((item, index) => (
                                             <div onClick={() => handleAddSelectedTime(item)} className={listSelectedTime.includes(item) ? "w-16 h-8 flex duration-300 items-center justify-center bg-lime-500 text-black rounded-md" : "w-16 h-8 flex items-center justify-center bg-yellow-400 text-black rounded-md"} key={item.id}>{item.label}</div>

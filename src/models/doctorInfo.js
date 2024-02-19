@@ -41,6 +41,13 @@ const DoctorInfoSchema = new Schema({
         // unique: [true, 'This DoctorInfo name already exists!'],
         // required: [true, 'Email is required!'],
     },
+    listSchedule: [{
+        date: { type: String },
+        scheduleTimes: [{
+            id: { type: Number },
+            label: { type: String }
+        }]
+    }],
     totalLikesPatients: {
         type: Number,
         // unique: [true, 'This DoctorInfo name already exists!'],
