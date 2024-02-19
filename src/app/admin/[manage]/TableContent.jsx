@@ -216,9 +216,21 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                     scheduleTimes: listSelectedTime
                 };
                 setListScheduleDates([...newListScheduleDates, newObj]);
+
+                // Update listSelectedTime based on currentDoctorInfo
+                if (currentDoctorInfo?.doctorInfo?.listSchedule?.length > 0) {
+                    const listTime = currentDoctorInfo?.doctorInfo?.listSchedule
+                        .filter(item => item?.date === selectedDate)
+                        .flatMap(item => item?.scheduleTimes || [])
+                        .map(item => {
+                            let objjj = {
+                                label: item.label, id: item.id
+                            }
+                            return objjj
+                        })
+                    setListSelectedTime(listTime);
+                }
             }, [selectedDate]);
-
-
 
             useEffect(() => {
                 // Map through listScheduleDates and update each item's scheduleTimes
@@ -236,17 +248,6 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                 // Update listScheduleDates with the modified array
                 setListScheduleDates(updatedListScheduleDates);
             }, [listSelectedTime]);
-
-
-
-            // listSchedule = [
-            //     { date: '2024-02-19', scheduleTimes: [{ id: 7, label: '7:00' }, { id: 8, label: '8:00' }] },
-            //     { date: '2024-02-20', scheduleTimes: [{ id: 7, label: '7:00' }, { id: 9, label: '9:00' }] },
-            // ]
-
-
-
-
 
             const [isOpenModalEditDoctor, setIsOpenModalEditDoctor] = useState(false)
             const onOpenModalEditDoctor = () => setIsOpenModalEditDoctor(true)
@@ -294,7 +295,6 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
             const handleChangeSelectedPriceModalDoctorInfo = (selectedOption) => {
                 setSelectedPriceModalDoctorInfo(selectedOption)
             }
-
 
             // fetch current selected doctor info
             useEffect(() => {
@@ -352,6 +352,8 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
 
             // submit change doctorinfo
             const handleChangeDoctorInfo = async () => {
+                const bla = (listScheduleDates?.filter(item => item?.scheduleTimes.length !== 0))
+                console.log(bla)
                 let response = await fetch(`/api/doctor-info/new-or-update`,
                     {
                         method: 'POST',
@@ -364,7 +366,7 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                             specialtyId: selectedSpecialtyModalDoctorInfo.value,
                             description: doctorDescription, price: selectedPriceModalDoctorInfo.value,
                             clinicId: selectedClinicModalDoctorInfo.value,
-                            listSchedule: listScheduleDates
+                            listSchedule: (listScheduleDates?.filter(item => item?.scheduleTimes.length !== 0))
                         })
                     }
                 )
@@ -428,7 +430,17 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                                     <Calendar tileDisabled={tileDisabled} onChange={onChangeDate} value={dateCalendar} />
                                     <div className="grid grid-cols-2 gap-3">
                                         {hoursArray.map((item, index) => (
-                                            <div onClick={() => handleAddSelectedTime(item)} className={listSelectedTime.includes(item) ? "w-16 h-8 flex duration-300 items-center justify-center bg-lime-500 text-black rounded-md" : "w-16 h-8 flex items-center justify-center bg-yellow-400 text-black rounded-md"} key={item.id}>{item.label}</div>
+                                            <div
+                                                key={item.id}
+                                                onClick={() => handleAddSelectedTime(item)}
+                                                className={
+                                                    listSelectedTime?.some(time => time.id === item.id)
+                                                        ? "w-16 h-8 flex duration-300 items-center justify-center bg-lime-500 text-black rounded-md"
+                                                        : "w-16 h-8 flex items-center justify-center bg-yellow-400 text-black rounded-md"
+                                                }
+                                            >
+                                                {item.label}
+                                            </div>
                                         ))}
                                     </div>
                                 </div>

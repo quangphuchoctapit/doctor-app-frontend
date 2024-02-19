@@ -48,13 +48,13 @@ const DoctorServices = () => {
 
     // fetch doctor of this page
     useEffect(() => {
-        // fetch all doctors
-        const fetchDoctors = async () => {
+        // fetch all medicines
+        const fetchMedicines = async () => {
             const medicines = await fetch(`/api/medicine`)
             const dataServer = await medicines.json()
             dispatch(addListMedicines({ listMedicines: dataServer }))
         }
-        fetchDoctors()
+        fetchMedicines()
     }, [])
     const [dataDoctor, setDataDoctor] = useState<{ doctorInfo?: { specialty?: { name?: string }, price?: number, description?: string }, username?: string, image?: string }>()
     const userRedux = useSelector((state: RootState) => state.user.value)

@@ -38,7 +38,7 @@ const Appointment = () => {
             }
         }
         fetchDoctorDetail()
-    }, [params.doctorId])
+    }, [params.doctorid])
 
     return (
         <div className='bg-gradient-to-br from-blue-200 via-white to-green-200 w-full'>
@@ -97,7 +97,7 @@ const Appointment = () => {
                         </div>
                     </div>
                     <div className="w-full flex items-center justify-center">
-                        <Link href='/appointment/confirm-appointment/3' className='py-2 w-full bg-green-600 rounded-md text-white text-center text-lg '>Next</Link>
+                        <Link href={`/appointment/confirm-appointment/${params.doctorid}`} className='py-2 w-full bg-green-600 rounded-md text-white text-center text-lg '>Next</Link>
                     </div>
                 </div>
             </div>
