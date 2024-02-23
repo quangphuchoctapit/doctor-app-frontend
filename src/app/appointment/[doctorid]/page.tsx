@@ -115,10 +115,11 @@ const Appointment = () => {
     const { listSchedule, age, name, formerIllnesses, gender, note, number, symptoms } = patientInput
     const patientId = userRedux.id
     const doctorId = dataDoctor?._id
+    const status = 'PENDING' // default status
     const response = await fetch(`/api/appointment/new`, {
       method: "POST",
       body: JSON.stringify({
-        listSchedule, age, name, formerIllnesses, gender, patientId, doctorId, note, number, symptoms
+        listSchedule, age, name, formerIllnesses, gender, patientId, doctorId, note, number, symptoms, status
       }),
 
 

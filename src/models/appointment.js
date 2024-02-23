@@ -37,6 +37,12 @@ const AppointmentSchema = new Schema({
     },
     patientGender: {
         type: String
+    },
+    patientNumber: {
+        type: String
+    },
+    patientName: {
+        type: String
     }
 });
 

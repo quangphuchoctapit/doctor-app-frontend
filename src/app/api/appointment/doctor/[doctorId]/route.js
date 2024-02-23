@@ -1,18 +1,19 @@
-import { connectToDB } from "../../../../../utils/database"
-import Appointment from "../../../../models/Appointment"
-import User from "../../../../models/User"
+import { log } from "console"
+import { connectToDB } from "../../../../../../utils/database"
+import Appointment from "../../../../../models/Appointment"
+import User from "../../../../../models/User"
 
 
 // get appointment with id
 export const POST = async (req, res) => {
-    const { patientId } = await req.json()
+    const { doctorId } = await req.json()
     try {
         await connectToDB();
 
-        const existingAppointment = await Appointment.find({ patientId });
+        const existingAppointments = await Appointment.find({ doctorId: doctorId });
 
-        if (existingAppointment.length > 0) {
-            const doctorId = existingAppointment[0].doctorId;
+        if (existingAppointments.length > 0) {
+            const doctorId = existingAppointments[0].doctorId;
             const usersWithDoctorInfo = await User.aggregate([
                 { $match: { _id: doctorId } },
                 {
@@ -75,29 +76,35 @@ export const POST = async (req, res) => {
                     }
                 }
             ]);
-            if (usersWithDoctorInfo) {
-                return new Response(JSON.stringify({ doctorInfo: usersWithDoctorInfo, appointment: existingAppointment }), {
-                    status: 201,
-                    code: 0
-                })
-            }
-            return new Response('cannot find doctors', {
-                status: 401,
-                code: 1
-            })
 
+            const appointmentsData = [];
+            for (const appointment of existingAppointments) {
+                const patientId = appointment.patientId;
+                const patientInfo = await User.findOne({ _id: patientId });
+                appointmentsData.push({
+                    patientInfo: patientInfo,
+                    doctorInfo: usersWithDoctorInfo,
+                    appointment: appointment
+                });
+            }
+
+            return new Response(JSON.stringify(appointmentsData), {
+                status: 201,
+                code: 0
+            });
         } else {
-            return new Response('Cannot find appointment', {
+            return new Response('Cannot find appointments', {
                 status: 404,
                 code: 1
             });
         }
     } catch (e) {
-        console.log(e)
-        return new Response(`Failed to load data from appointment with `, {
+        console.log(e);
+        return new Response(`Failed to load data from appointments with doctorId: ${doctorId}`, {
             status: 500,
             code: 2
-        })
+        });
     }
 }
+
 

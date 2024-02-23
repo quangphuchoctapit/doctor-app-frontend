@@ -1,10 +1,10 @@
 import { connectToDB } from "../../../../../utils/database"
-import Appointment from "../../../../models/appointment"
+import Appointment from "../../../../models/Appointment"
 
 export const POST = async (req, res) => {
-    const { listSchedule, age, name, formerIllnesses, gender, patientId, doctorId, note, number, symptoms } = await req.json()
+    const { listSchedule, age, name, formerIllnesses, gender, patientId, doctorId, note, number, symptoms, status } = await req.json()
     const newAppointment = new Appointment({
-        listSchedule, age, name, formerIllnesses, gender, patientId, note, number, symptoms, doctorId
+        listSchedule, patientAge: age, patientName: name, patientFormerIllnesses: formerIllnesses, patientGender: gender, patientId, note, patientNumber: number, patientSymptoms: symptoms, doctorId, status
     })
     try {
         await connectToDB()

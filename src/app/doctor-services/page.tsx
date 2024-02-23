@@ -11,6 +11,23 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/Store';
 import { addListMedicines, handleSearchResultMedicines, inputSearchMedicines } from '../redux/features/search/searchSlice';
 
+interface Appointment {
+    appointment: {
+        note: string, patientAge: string, patientSymptoms: string,
+        patientFormerIllnesses: string, patientGender: string,
+        patientName: string, patientNumber: string,
+        status: string, _id: string,
+        listSchedule: {
+            date: string,
+            scheduleTimes: { id: Number, _id: string, label: string }[]
+        }[]
+    },
+    patientInfo?: {
+        email: string, image?: string
+    }
+}
+
+
 const DoctorServices = () => {
     const dispatch = useDispatch()
 
@@ -36,8 +53,6 @@ const DoctorServices = () => {
 
 
     // search medicines for modal patient waiting list
-    const searchQuery = useSelector((state: RootState) => state.search.medicines.query)
-    const listMedicines = useSelector((state: RootState) => state.search.medicines.listMedicines)
     const resultSearch = useSelector((state: RootState) => state.search.medicines.resultSearch)
     const [queryMedicineSearch, setQueryMedicineSearch] = useState('')
     const handleOnChangeMedicineQuery = (e: string) => {
@@ -56,8 +71,10 @@ const DoctorServices = () => {
         }
         fetchMedicines()
     }, [])
-    const [dataDoctor, setDataDoctor] = useState<{ doctorInfo?: { specialty?: { name?: string }, price?: number, description?: string }, username?: string, image?: string }>()
+    const [dataDoctor, setDataDoctor] = useState<{ _id: string, doctorInfo?: { specialty?: { name?: string }, price?: number, description?: string }, username?: string, image?: string }>()
     const userRedux = useSelector((state: RootState) => state.user.value)
+
+    // fetch doctor detail
     useEffect(() => {
         const fetchDoctorDetail = async () => {
             let id = userRedux.id
@@ -83,6 +100,33 @@ const DoctorServices = () => {
     const toggleDropdownMedicineFilter = () => {
         setIsOpenDropdownMedicineFilter(!isopenDropdownMedicineFilter);
     };
+    const [dataPatientWaitingList, setDataPatientWaitingList] = useState<Appointment[]>([])
+    const [dataAppointmentModal, setDataAppointmentModal] = useState<Appointment[]>([])
+    const [currentSelectedAppointment, setCurrentSelectedAppointment] = useState('')
+
+    // fetch doctor appointments
+    useEffect(() => {
+        let doctorId = dataDoctor?._id
+        const fetchAppointment = async () => {
+            const response = await fetch(`/api/appointment/doctor/${userRedux.id}`, {
+                method: "POST",
+                body: JSON.stringify({
+                    doctorId: doctorId
+                }),
+            });
+            if (response.ok) {
+
+                let dataServer = await response.json()
+                setDataPatientWaitingList(dataServer)
+            }
+        }
+        fetchAppointment()
+    }, [dataDoctor?._id])
+
+    useEffect(() => {
+        const filterData = dataPatientWaitingList?.filter(item => item?.appointment?._id === currentSelectedAppointment)
+        setDataAppointmentModal(filterData[0])
+    }, [currentSelectedAppointment])
 
     return (
         <div className='w-full min-h-screen bg-gradient-to-tr via-white from-blue-200 to-cyan-200'>
@@ -172,38 +216,44 @@ const DoctorServices = () => {
                             </div>
 
                             {/* patient needs appointment */}
-                            <div onClick={setOpenPatientModal} className="p-3 rounded-lg flex flex-col gap-3 text-black bg-white shadow-md line-clamp-1 border border-green-500 shadow-green-800">
-                                <div className="flex gap-3 items-center">
-                                    <div className='basis-1/6'>
-                                        <div className="w-24 h-24 border flex items-center justify-center">img patient</div>
-                                    </div>
-                                    <div className="basis-5/6 w-full flex flex-col gap-3">
-                                        <div className="flex items-center gap-3 justify-between z-10">
-                                            <p className="whitespace-pre-wrap pr-3">blabla</p>
-                                            <div className="">blabla2</div>
+                            {dataPatientWaitingList?.length > 0 &&
+                                dataPatientWaitingList?.map((item, index) => (
+                                    <div key={index} onClick={() => { setOpenPatientModal(); setCurrentSelectedAppointment(item?.appointment?._id) }} className="p-3 rounded-lg flex flex-col gap-3 text-black bg-white shadow-md line-clamp-1 border border-green-500 shadow-green-800">
+                                        <div className="flex gap-3 items-center">
+                                            <div className='basis-1/6'>
+                                                <div className="w-24 h-24 border flex items-center justify-center">
+                                                    <img src={item?.patientInfo?.image} alt="" className='w-full h-full object-cover' />
+                                                </div>
+                                            </div>
+                                            <div className="basis-5/6 w-full flex flex-col gap-3">
+                                                <div className="flex items-center gap-3 justify-between z-10">
+                                                    <p className="whitespace-pre-wrap pr-3">{item?.appointment?.patientName}</p>
+                                                    <div className="">{item?.appointment?.status}</div>
+                                                </div>
+                                                <div className="">{item?.appointment?.patientSymptoms}</div>
+                                                <div className="flex items-center gap-2 justify-between">
+                                                    <button className='px-3 py-1 border rounded-md bg-gray-200'>View Detail</button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="">symptom symptom</div>
-                                        <div className="flex items-center gap-2 justify-between">
-                                            <button className='px-3 py-1 border rounded-md bg-gray-200'>View Detail</button>
-                                        </div>
+                                        <div className="text-green-600 text-lg font-smibold">Appointment at <span className='font-bold'>{item?.appointment?.listSchedule?.map((item, index) => <div key={index}>{item?.date}-{item.scheduleTimes.map(item => item?.label)}</div>)}</span></div>
                                     </div>
-                                </div>
-                                <div className="text-green-600 text-lg font-smibold">Appointment at <span className='font-bold'>14:00</span></div>
-                            </div>
+                                ))
+                            }
 
                             <Modal open={isOpenPatientModal} onClose={onClosePatientModal} center>
                                 <div className="text-black p-3 flex flex-col gap-4 px-3 ">
                                     <h2 className='my-4 text-lg font-bold text-center'>Patient Details</h2>
                                     <div className="flex flex-col gap-3">
                                         <div className="flex justify-between items-center">
-                                            <div className="text-lg font-semibold">Mr. Tommy</div>
+                                            <div className="text-lg font-semibold">{dataAppointmentModal?.appointment?.patientName}</div>
                                             <button className='px-3 border-none bg-green-600 py-1  text-white rounded-lg'>Contact this patient</button>
                                         </div>
-                                        <div className="text-gray-600"><span>21</span>yrs old - <span>Male</span> - <span>No formal illnesses</span></div>
+                                        <div className="text-gray-600"><span>{dataAppointmentModal?.appointment?.patientAge}</span>yrs old - <span>{dataAppointmentModal?.appointment?.patientGender}</span> - <span>{dataAppointmentModal?.appointment?.patientFormalIllnesses !== '' ? dataAppointmentModal?.appointment?.patientFormerIllnesses : 'No formal illnesses'}</span></div>
                                         <div className="w-full flex justify-center">
                                         </div>
                                         <div className="w-full">
-                                            <textarea onChange={() => { }} className='w-full lg:min-w-[700px] sm:min-w-[500px] bg-green-100 text-black border px-3 py-1' value={`My stomach hurts, I always have the feeling to vomit at any given time, I have frequent urge to burp, but that's too much.`}></textarea>
+                                            <textarea onChange={() => { }} className='w-full lg:min-w-[700px] sm:min-w-[500px] bg-green-100 text-black border px-3 py-1' value={dataAppointmentModal?.appointment?.patientSymptoms}></textarea>
                                         </div>
                                         <div className="border p-3 bg-white rounded-lg flex flex-col gap-3 ">
                                             <div className="relative">
