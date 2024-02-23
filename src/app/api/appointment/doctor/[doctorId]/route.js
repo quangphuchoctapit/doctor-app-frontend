@@ -93,9 +93,9 @@ export const POST = async (req, res) => {
                 code: 0
             });
         } else {
-            return new Response('Cannot find appointments', {
-                status: 404,
-                code: 1
+            return new Response(JSON.stringify([]), {
+                status: 200,
+                code: 0
             });
         }
     } catch (e) {
