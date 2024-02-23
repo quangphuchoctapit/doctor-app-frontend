@@ -55,9 +55,6 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
         dispatch(inputSearchMedicines({ query: e }))
         dispatch(handleSearchResultMedicines())
     }
-    console.log(resultSearch);
-
-
 
 
 

@@ -1,8 +1,31 @@
 'use client'
 import Link from 'next/link';
-import React from 'react'
+import { useParams } from 'next/navigation';
+import { useState, useEffect } from 'react'
 
 const OrderPage = () => {
+    const params = useParams()
+
+
+    useEffect(() => {
+        const fetchAppointment = async () => {
+            const response = await fetch(`/api/appointment/${params.userId}`, {
+                method: "POST",
+                body: JSON.stringify({
+                    patientId: params.userId
+                }),
+            });
+            if (response.ok) {
+
+                let dataServer = await response.json()
+                console.log(dataServer);
+                let object = dataServer[0]
+            }
+        }
+        fetchAppointment()
+    }, [params.userId])
+
+
     const doctorData = [
         { id: 1, name: 'Doctor 1', price: 20, status: 'Pending' },
         { id: 3, name: 'Doctor 3', price: 50, status: 'Confirmed' },

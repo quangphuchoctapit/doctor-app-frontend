@@ -69,7 +69,7 @@ const NavBar = () => {
                         {isOpenDropdownUser && (
                             <div className="absolute top-full z-10 right-0 mt-2 w-40 bg-white shadow-lg rounded-lg py-2">
                                 <Link href={`/profile/${userId}`} className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</Link>
-                                <Link href="/orders" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Orders</Link>
+                                <Link href={`/orders/${userId}`} className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Orders</Link>
                                 <Link href="/cart" className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Cart</Link>
                                 <Link href="/login" className="block px-4 py-2 text-red-800 hover:bg-gray-700 hover:text-red-300 font-bold">Log Out</Link>
                             </div>

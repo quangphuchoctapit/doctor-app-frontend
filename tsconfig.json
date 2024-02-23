@@ -33,7 +33,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/profile/[userid]/page.jsx",
-    "src/app/appointment/confirm-appointment/[doctorid]/page.jsx"
+    "src/app/appointment/ConfirmAppointment.tsx",
+    "src/app/appointment/[doctorid]/page.jsx"
   ],
   "exclude": [
     "node_modules"
