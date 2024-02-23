@@ -120,6 +120,8 @@ const Appointment = () => {
       body: JSON.stringify({
         listSchedule, age, name, formerIllnesses, gender, patientId, doctorId, note, number, symptoms
       }),
+
+
     });
     if (response.ok) {
       toast.success('Successfully created new appointment')
