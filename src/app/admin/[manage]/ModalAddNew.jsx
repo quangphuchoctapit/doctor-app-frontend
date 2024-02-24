@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Select from 'react-select'
 // modal add new
 const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
     const [selectedFileImage, setSelectedFileImage] = useState(null);
@@ -99,6 +100,7 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
     }
 
     const handleAddMedicine = async () => {
+        const type = selectedSpecialtyModalDoctorInfo
         const response = await fetch(`/api/medicine/new`, {
             method: "POST",
             body: JSON.stringify({
@@ -121,6 +123,8 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
             [value]: e
         }));
     }
+
+    console.log(selectedSpecialtyModalDoctorInfo);
 
     switch (value) {
         case 'medicines':

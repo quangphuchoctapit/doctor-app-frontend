@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react'
 
 const OrderPage = () => {
     const params = useParams()
-
+    const [dataAppointment, setDataAppointment] = useState<{ doctorInfo: { username: String, doctorInfo: { specialty: { name: string }, price: number } }[], appointment: { doctorNote: string, status: string }[] }>()
 
     useEffect(() => {
         const fetchAppointment = async () => {
@@ -19,11 +19,13 @@ const OrderPage = () => {
 
                 let dataServer = await response.json()
                 console.log(dataServer);
-                let object = dataServer[0]
+                setDataAppointment(dataServer)
+
             }
         }
         fetchAppointment()
     }, [params.userId])
+    console.log(dataAppointment);
 
 
     const doctorData = [
@@ -99,6 +101,33 @@ const OrderPage = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">{item.price}</td>
                                     </tr>
                                 ))}
+                                {dataAppointment && (
+                                    <tr >
+                                        <td className="px-6 py-4 whitespace-nowrap">1</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <Link href='/doctor/3'>{dataAppointment?.doctorInfo[0]?.username}</Link>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{dataAppointment?.appointment[0]?.status}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <div className="relative">
+                                                <select
+                                                    className="block appearance-none w-full bg-white border border-gray-300 hover:border-gray-400 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500"
+                                                    onChange={(e) => { }}
+                                                >
+                                                    <option value="active">Active</option>
+                                                    <option value="inactive">Inactive</option>
+                                                    {/* Add more options if needed */}
+                                                </select>
+                                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap">{dataAppointment?.doctorInfo[0]?.doctorInfo?.price}</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>

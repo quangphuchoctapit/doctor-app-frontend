@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../redux/Store';
 import { addListMedicines, handleSearchResultMedicines, inputSearchMedicines } from '../redux/features/search/searchSlice';
 import { log } from 'console';
+import { toast } from 'react-toastify';
 
 
 interface Appointment {
@@ -74,7 +75,8 @@ const DoctorServices = () => {
     }
     const [displayedMedicine, setDisplayedMedicine] = useState<Medicine>()
     const [listSelectedMedicine, setListSelectedMedicine] = useState<MedicineList[]>([])
-
+    const [specialtyDisplayedMedicine, setSpecialtyDisplayedMedicine] = useState<{ image: string, name: string, _id: string }[]>()
+    const [doctorNote, setDoctorNote] = useState('')
 
     // handle click medicine
     const handleClickMedicine = async (id: string | undefined) => {
@@ -98,7 +100,6 @@ const DoctorServices = () => {
             setListSelectedMedicine([...listSelectedMedicine, { quantity: 1, medicine: item }])
         }
     }
-    console.log(listSelectedMedicine);
     const handleOnChangeQuantityMedicine = (value: any, item: MedicineList) => {
         const listSelectedMedicineCopy = [...listSelectedMedicine];
         const updatedList = listSelectedMedicineCopy.map((itemData) => {
@@ -110,7 +111,21 @@ const DoctorServices = () => {
 
         setListSelectedMedicine(updatedList);
     };
-
+    const convertSpecialty = async (id: string | undefined) => {
+        const response = await fetch(`/api/specialty/${id}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                id: id,
+            })
+        })
+        if (response.ok) {
+            let dataServer = await response.json()
+            setSpecialtyDisplayedMedicine(dataServer)
+        }
+    }
+    useEffect(() => {
+        convertSpecialty(displayedMedicine?.type)
+    }, [displayedMedicine])
 
     // fetch doctor of this page
     useEffect(() => {
@@ -179,6 +194,25 @@ const DoctorServices = () => {
         setDataAppointmentModal(filterData[0])
     }, [currentSelectedAppointment])
 
+
+    const handleSubmit = async () => {
+        const listMedicineRaw = [...listSelectedMedicine]
+        const response = await fetch(`/api/appointment/doctor/confirm`, {
+            method: 'POST',
+            body: JSON.stringify({
+                appointmentId: currentSelectedAppointment,
+                doctorNote: doctorNote,
+                listMedicine: listSelectedMedicine
+            })
+        })
+        if (response.ok) {
+            let dataServer = await response.json()
+            console.log(dataServer)
+            toast.success('Successfully confirm appointment')
+            console.log('doctornote: ', doctorNote, 'list medicine: ', listSelectedMedicine, 'appointmentId:', currentSelectedAppointment)
+            onClosePatientModal()
+        }
+    }
 
     return (
         <>
@@ -369,7 +403,7 @@ const DoctorServices = () => {
                                             <div className="basis-4/6 w-full flex flex-col gap-3">
                                                 <div className="flex items-center gap-3 justify-between z-10">
                                                     <p className="whitespace-pre-wrap pr-3">{displayedMedicine?.name}</p>
-                                                    <div className="">{displayedMedicine?.type}</div>
+                                                    <div className="">{specialtyDisplayedMedicine?.[0]?.name}</div>
                                                 </div>
                                                 <div className="">${displayedMedicine?.price}</div>
                                                 <div className="flex items-center gap-2">
@@ -396,10 +430,10 @@ const DoctorServices = () => {
                                     </ul>
                                     <div className="w-full flex flex-col my-2">
                                         <label htmlFor="" className='my-3 font-semibold '>Note for Patient</label>
-                                        <textarea className='px-3 py-1 w-full rounded-md text-black bg-yellow-50 ' placeholder='Note for patient'></textarea>
+                                        <textarea value={doctorNote} onChange={e => setDoctorNote(e.target.value)} className='px-3 py-1 w-full rounded-md text-black bg-yellow-50 ' placeholder='Note for patient'></textarea>
                                     </div>
                                     <div className="w-full flex justify-end my-5">
-                                        <button className='px-3 py-1 rounded-md bg-green-600 text-white '>Confirm</button>
+                                        <button onClick={handleSubmit} className='px-3 py-1 rounded-md bg-green-600 text-white '>Confirm</button>
                                     </div>
                                 </div>
                             </div>
