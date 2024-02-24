@@ -9,6 +9,7 @@ export const POST = async (req, res) => {
     try {
         await connectToDB()
         const existingMedicine = await Medicine.find({ _id: id });
+        // console.log('medinciencien: ', existingMedicine);
         if (existingMedicine) {
             return new Response(JSON.stringify(existingMedicine), {
                 status: 201,

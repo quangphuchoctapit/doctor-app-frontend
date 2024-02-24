@@ -1,10 +1,11 @@
+import { ObjectId } from 'mongodb';
 import { Schema, model, models } from 'mongoose';
 
 const MedicineSchema = new Schema({
     name: {
         type: String,
         unique: [true, 'This Medicine name already exists!'],
-        required: [true, 'Email is required!'],
+        required: [true, 'name is required!'],
     },
     image: {
         type: String,
@@ -32,6 +33,9 @@ const MedicineSchema = new Schema({
     dispensed: {
         type: String,
     },
+    unit: {
+        type: String,
+    },
     originCountry: {
         type: String,
     },
@@ -42,7 +46,7 @@ const MedicineSchema = new Schema({
         type: String,
     },
     type: {
-        type: String,
+        type: ObjectId, ref: 'Specialty'
     },
     price: {
         type: Number,

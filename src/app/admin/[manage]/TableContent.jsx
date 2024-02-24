@@ -83,6 +83,30 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
         setDataClinics(clinicsData)
     }, [dataTable])
 
+    const [selectedFileImage, setSelectedFileImage] = useState(null);
+    const [base64String, setBase64String] = useState('');
+    const handleFileChange = (event) => {
+        const file = event.target.files[0]; // Get the first selected file
+        setSelectedFileImage(file); // Store the file object in state
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64 = reader.result;
+                setBase64String(base64); // Store the base64 string in state
+            };
+            reader.readAsDataURL(file); // Convert the file to base64
+        }
+    };
+    const [selectedSpecialtyModalDoctorInfo, setSelectedSpecialtyModalDoctorInfo] = useState('')
+    const [selectedSpecialtyModalMedicineInfo, setSelectedSpecialtyModalMedicineInfo] = useState('')
+
+    const handleChangeSelectedSpecialtyModalDoctorInfo = (selectedOption) => {
+        setSelectedSpecialtyModalDoctorInfo(selectedOption)
+    }
+    const handleChangeSelectedSpecialtyModalMedicineInfo = (selectedOption) => {
+        setSelectedSpecialtyModalMedicineInfo(selectedOption)
+    }
+
     switch (value) {
         case 'users':
             return (
@@ -261,31 +285,15 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
             const [currentSelectedDoctorId, setCurrentSelectedDoctorId] = useState('')
             const [currentDoctorInfo, setCurrentDoctorInfo] = useState({})
             const [doctorDescription, setDoctorDescription] = useState('')
-            const [selectedFileImage, setSelectedFileImage] = useState(null);
-            const [base64String, setBase64String] = useState('');
-            const handleFileChange = (event) => {
-                const file = event.target.files[0]; // Get the first selected file
-                setSelectedFileImage(file); // Store the file object in state
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        const base64 = reader.result;
-                        setBase64String(base64); // Store the base64 string in state
-                    };
-                    reader.readAsDataURL(file); // Convert the file to base64
-                }
-            };
+
             const handleChangeDoctorDescription = (e) => {
                 setDoctorDescription(e)
             }
-            const [selectedSpecialtyModalDoctorInfo, setSelectedSpecialtyModalDoctorInfo] = useState('')
             const [selectedLocationModalDoctorInfo, setSelectedLocationModalDoctorInfo] = useState('')
             const [selectedClinicModalDoctorInfo, setSelectedClinicModalDoctorInfo] = useState('')
             const [selectedPriceModalDoctorInfo, setSelectedPriceModalDoctorInfo] = useState('')
 
-            const handleChangeSelectedSpecialtyModalDoctorInfo = (selectedOption) => {
-                setSelectedSpecialtyModalDoctorInfo(selectedOption)
-            }
+
             const handleChangeSelectedLocationModalDoctorInfo = (selectedOption) => {
                 setSelectedLocationModalDoctorInfo(selectedOption)
             }
@@ -453,10 +461,79 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                 </>
             )
         case 'medicines':
+            const [isOpenModalEditMedicine, setIsOpepenModalEditMedicine] = useState(false)
+            const onCloseModalEditMedicine = () => setIsOpepenModalEditMedicine(false)
+            const onOpenModalEditMedicine = () => setIsOpepenModalEditMedicine(true)
+            const handleOnChangeInput = (e, value) => {
+                setDataInput(prevState => ({
+                    ...prevState,
+                    [value]: e
+                }));
+            }
+
+            const [dataInput, setDataInput] = useState({
+                id: '',
+                image: '',
+                name: '',
+                location: '',
+                description: '',
+                available: 0,
+                totalDoctors: 0,
+                brandOwner: '',
+                usage: '',
+                type: '',
+                unit: '',
+                price: 0,
+                ingredients: [],
+                dispensed: '',
+                originCountry: '',
+                provider: ''
+            })
+            const [currentSelectedMedicineId, setCurrentSelectedMedicineId] = useState('')
+            dataInput.type = selectedSpecialtyModalMedicineInfo.value
+            dataInput.available = +dataInput.available
+            dataInput.image = base64String
+            const { description, image, type, name, location, unit, price, ingredients,
+                dispensed, originCountry, provider, totalDoctors, brandOwner, usage,
+                available } = dataInput
+
+
+            const handleEditMedicine = async () => {
+                console.log(dataInput);
+                const response = await fetch(`/api/medicine/edit`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        medicineId: currentSelectedMedicineId,
+                        description, image, type, name, location, unit, price, ingredients,
+                        dispensed, originCountry, provider, totalDoctors, brandOwner, usage,
+                        available
+                    }),
+                })
+                if (response.ok) {
+                    let dataServer = await response.json()
+                    refetch.medicines()
+                    onCloseModalEditMedicine()
+                }
+            }
+
+            const openModalEditMedicine = async (id) => {
+                onOpenModalEditMedicine()
+                setCurrentSelectedMedicineId(id)
+                const response = await fetch(`/api/medicine/${id}`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: id,
+                    }),
+                })
+                if (response.ok) {
+                    let dataServer = await response.json()
+                    setDataInput(dataServer[0]);
+                }
+            }
             return (
                 <>
                     {dataTable.medicines.map((item, index) => (
-                        <tr key={item._id}>
+                        <tr key={item._id} onClick={() => openModalEditMedicine(item?._id)}>
                             <td className="px-6 py-4 whitespace-nowrap">
                                 <img src={item.image} alt={item.name} className='w-8 h-8 object-cover' />
                             </td>
@@ -475,6 +552,78 @@ export const DisplayTableContent = ({ value, onOpenModalUserAction, dataTable, i
                             <td className="px-6 py-4 whitespace-nowrap">{item?.provider || 'England'}</td>
                         </tr>
                     ))}
+                    <Modal open={isOpenModalEditMedicine} onClose={onCloseModalEditMedicine} center>
+                        <div className="text-black p-3 flex flex-col gap-4">
+                            <h2 className='my-4 text-lg font-bold text-center'>Set Medicine Info</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                                <div className='flex flex-col gap-1'>
+                                    <label htmlFor="doctorImage" className="text-gray-600">Medicine Image</label>
+                                    <div className="relative">
+                                        <input type="file" id="doctorImage" accept="image/*" className='hidden' onChange={handleFileChange} />
+                                        <label htmlFor="doctorImage" className="bg-white rounded-md px-4 py-2 border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:border-blue-500">
+                                            <span className="text-sm text-gray-500">Choose Image</span>
+                                        </label>
+                                    </div>
+                                    {selectedFileImage && (
+                                        <div className='pt-1'>
+                                            <p className='text-xs'>Selected file: {selectedFileImage.name}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Name</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'name')} value={dataInput.name} type="text" placeholder='name' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Price</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'price')} value={dataInput.price} type="text" placeholder='price' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Description</label>
+                                    <textarea placeholder='description' value={dataInput.description} onChange={e => handleOnChangeInput(e.target.value, 'description')} className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Brand Owner</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'brandOwner')} value={dataInput.brandOwner} type="text" placeholder='brand owner' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Usage</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'usage')} value={dataInput.usage} type="text" placeholder='usage' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Dispensed</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'dispensed')} value={dataInput.dispensed} type="text" placeholder='dispensed' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Origin (country)</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'originCountry')} value={dataInput.originCountry} type="text" placeholder='origin (country)' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Provider</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'provider')} value={dataInput.provider} type="text" placeholder='provider' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Ingredients</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'ingredients')} value={dataInput.ingredients} type="text" placeholder='ingredients' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Medicine type</label>
+                                    <Select options={dataSpecialties} value={selectedSpecialtyModalMedicineInfo} onChange={handleChangeSelectedSpecialtyModalMedicineInfo} />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Unit package</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'unit')} value={dataInput.unit} type="text" placeholder='unit package' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label htmlFor="">Available</label>
+                                    <input onChange={e => handleOnChangeInput(e.target.value, 'available')} value={dataInput.available} type="number" placeholder='available stock' className='w-full px-3 py-1 rounded border' />
+                                </div>
+                                <div className="col-span-3 flex justify-end">
+                                    <button onClick={handleEditMedicine} className='px-5 py-2 rounded-lg bg-green-600 hover:duration-200 hover:bg-green-700 text-white border'>Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    </Modal>
                 </>
             )
         case 'clinics':

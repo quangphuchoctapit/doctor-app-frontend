@@ -133,7 +133,7 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
                 <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                         <div className='flex flex-col gap-1'>
-                            <label htmlFor="doctorImage" className="text-gray-600">Doctor Image</label>
+                            <label htmlFor="doctorImage" className="text-gray-600">Medicine Image</label>
                             <div className="relative">
                                 <input type="file" id="doctorImage" accept="image/*" className='hidden' onChange={handleFileChange} />
                                 <label htmlFor="doctorImage" className="bg-white rounded-md px-4 py-2 border border-gray-300 cursor-pointer hover:bg-gray-50 focus:outline-none focus:border-blue-500">
