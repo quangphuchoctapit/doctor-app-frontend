@@ -27,8 +27,11 @@ const page = () => {
         if (response.ok) {
             const dataServer = await response.json()
             let defaultImage = dataServer.image ? dataServer.image : dataServer.gender === 'male' ? '/user/avatar/user-male.png' : '/user/avatar/user-female.png'
-            const { username, _id, role, gender } = dataServer
-            await dispatch(loggedIn({ email: dataServer.email, username: username, image: defaultImage, id: _id, role: role, gender: gender }))
+            let { username, _id, role, gender, balance } = dataServer
+            if (!balance) {
+                balance = 0
+            }
+            await dispatch(loggedIn({ balance, email: dataServer.email, username: username, image: defaultImage, id: _id, role: role, gender: gender }))
             router.push('/')
 
             toast.success('Succesfully logged in')

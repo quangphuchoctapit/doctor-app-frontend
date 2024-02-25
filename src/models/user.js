@@ -36,6 +36,9 @@ const UserSchema = new Schema({
         type: String,
         // required: [true, 'Location is required!'],
     },
+    balance: {
+        type: Number
+    }
 });
 
 const User = models.User || model("User", UserSchema);

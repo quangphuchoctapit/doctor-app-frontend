@@ -10,7 +10,20 @@ import { useDispatch, useSelector } from 'react-redux'
 
 const Home = () => {
   const userRedux = useSelector((state: RootState) => state.user.value)
+  const [userReduxData, setUserReduxData] = useState<{
+    email: string
+    id: string
+    role: string
+    image: string
+    username: string
+    gender: string
+    balance: number
+}>()
+  useEffect(()=> {
+    setUserReduxData(userRedux)
+  },[userRedux])
 
+  
   const [dataHomePage, setDataHomePage] = useState({
     users: [],
     medicines: [],
@@ -103,7 +116,12 @@ const Home = () => {
               <div className="p-2 rounded ">87B Nguyen Cong Tru, Bao Loc</div>
             </div>
             <div className=" w-12 h-12 flex items-center rounded border justify-center "><FaRegBell /></div>
-          </div>
+                      </div>
+                      <div className="w-full flex items-center gap-2">
+              <label htmlFor="">My Balance: </label>
+              <span className='text-green-600 font-semibold text-lg'>{userReduxData?.balance}</span>
+              <Link href={`/deposit/${userReduxData?.id}`} className='px-3 py-1 rounded-md bg-yellow-500 text-gray-700'>Deposit</Link>
+            </div>
 
           {/* live doctors */}
           <div className="my-5">

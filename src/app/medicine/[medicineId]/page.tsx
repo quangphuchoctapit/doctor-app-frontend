@@ -166,7 +166,7 @@ const MedicinePage = () => {
                         {dataMedicineSimilar.map((item, index) => (
                             <div className="rounded-md border p-3 hover:border-green-400 hover:duration-200 hover:shadow-lg hover:scale-95" key={item._id}>
                                 <div className="h-[70%]">
-                                    <div className="h-48 min-w-48 bg-orange-300">
+                                    <div className="h-48 max-w-48 bg-orange-300">
                                         <img src={item?.image} alt="" className='w-full object-cover h-full' />
                                     </div>
                                 </div>

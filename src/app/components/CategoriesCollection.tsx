@@ -23,6 +23,7 @@ interface ICategoriesCollectionProps {
                 name?: string
             }
             price?: number
+            totalNumberPatients?:number
         }
         username?: string
         price?: number
@@ -163,7 +164,7 @@ const CategoriesCollection: React.FC<ICategoriesCollectionProps> = ({ topic, dat
                                 <div className="flex items-center gap-1 mt-3">
                                     <FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} /><FaStar className='text-yellow-400' size={10} />
                                 </div>
-                                <div className="mt-2 text-gray-500">25k patients</div>
+                                <div className="mt-2 text-gray-500">{item?.doctorInfo?.totalNumberPatients ? item?.doctorInfo?.totalNumberPatients : 0} patients</div>
                             </div>
                         }
                         {topic === 'Featured Doctors' &&
