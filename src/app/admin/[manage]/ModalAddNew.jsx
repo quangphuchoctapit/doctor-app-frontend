@@ -100,7 +100,7 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
     }
 
     const handleAddMedicine = async () => {
-        const type = selectedSpecialtyModalDoctorInfo
+        const type = selectedSpecialtyModalDoctorInfo.value
         const response = await fetch(`/api/medicine/new`, {
             method: "POST",
             body: JSON.stringify({
@@ -123,8 +123,6 @@ const DisplayModalAddNew = ({ value, isAdmin, dataTable, close, refetch }) => {
             [value]: e
         }));
     }
-
-    console.log(selectedSpecialtyModalDoctorInfo);
 
     switch (value) {
         case 'medicines':

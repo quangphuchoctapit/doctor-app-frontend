@@ -137,7 +137,7 @@ const DoctorServices = () => {
         }
         fetchMedicines()
     }, [])
-    const [dataDoctor, setDataDoctor] = useState<{ _id: string, doctorInfo?: { specialty?: { name?: string }, price?: number, description?: string }, username?: string, image?: string }>()
+    const [dataDoctor, setDataDoctor] = useState<{ _id: string, doctorInfo?: { specialty?: { name?: string }, price?: number, description?: string, _id: string }, username?: string, image?: string }>()
     const userRedux = useSelector((state: RootState) => state.user.value)
 
     // fetch doctor detail
@@ -167,28 +167,61 @@ const DoctorServices = () => {
         setIsOpenDropdownMedicineFilter(!isopenDropdownMedicineFilter);
     };
     const [dataPatientWaitingList, setDataPatientWaitingList] = useState<Appointment[]>([])
+    const [dataPatientWaitingListByDate, setDataPatientWaitingListByDate] = useState<Appointment[]>([])
+    const [dataTimeByDate, setDataTimeByDate] = useState<{ label: string, _id: string }[]>([]);
+
     const [dataAppointmentModal, setDataAppointmentModal] = useState<Appointment>()
     const [currentSelectedAppointment, setCurrentSelectedAppointment] = useState('')
+    useEffect(() => {
+        const filterPatientByDate = dataPatientWaitingList?.filter(item =>
+            item?.appointment?.listSchedule?.some(schedule =>
+                schedule.date === selectedDate
+            )
+        );
+
+        const filteredScheduleTimes = filterPatientByDate?.flatMap(item =>
+            item.appointment?.listSchedule?.filter(schedule => schedule.date === selectedDate)
+        )?.map(filteredItem => filteredItem?.scheduleTimes)?.flat(); // flatten the array
+
+        if (filteredScheduleTimes) {
+            const uniqueTime = filteredScheduleTimes.reduce((unique: { label: string; _id: string }[], appointment) => {
+                // Check if an appointment with the same _id exists in the unique array
+                if (!unique.some(a => a._id === appointment._id)) {
+                    unique.push(appointment); // If not, add it to the unique array
+                }
+                return unique;
+            }, []);
+
+            setDataTimeByDate(uniqueTime);
+        }
+
+        setDataPatientWaitingListByDate(filterPatientByDate);
+    }, [selectedDate, dataPatientWaitingList]);
+
+
 
     // fetch doctor appointments
-    useEffect(() => {
-        let doctorId = dataDoctor?._id
-        const fetchAppointment = async () => {
-            const response = await fetch(`/api/appointment/doctor/${userRedux.id}`, {
-                method: "POST",
-                body: JSON.stringify({
-                    doctorId: doctorId
-                }),
-            });
-            if (response.ok) {
+    let doctorId = dataDoctor?._id
+    const fetchAppointment = async () => {
+        const response = await fetch(`/api/appointment/doctor/${userRedux.id}`, {
+            method: "POST",
+            body: JSON.stringify({
+                doctorId: doctorId
+            }),
+        });
+        if (response.ok) {
 
-                let dataServer = await response.json()
-                setDataPatientWaitingList(dataServer)
-            }
+            let dataServer = await response.json()
+            setDataPatientWaitingList(dataServer)
+
         }
+    }
+    useEffect(() => {
         fetchAppointment()
     }, [dataDoctor?._id])
 
+
+    // set data appointment modal
     useEffect(() => {
         const filterData = dataPatientWaitingList?.filter(item => item?.appointment?._id === currentSelectedAppointment)
         setDataAppointmentModal(filterData[0])
@@ -196,21 +229,20 @@ const DoctorServices = () => {
 
 
     const handleSubmit = async () => {
-        const listMedicineRaw = [...listSelectedMedicine]
         const response = await fetch(`/api/appointment/doctor/confirm`, {
             method: 'POST',
             body: JSON.stringify({
                 appointmentId: currentSelectedAppointment,
                 doctorNote: doctorNote,
-                listMedicine: listSelectedMedicine
+                listMedicine: listSelectedMedicine,
+                doctorInfoId: dataDoctor?.doctorInfo?._id
             })
         })
         if (response.ok) {
             let dataServer = await response.json()
-            console.log(dataServer)
             toast.success('Successfully confirm appointment')
-            console.log('doctornote: ', doctorNote, 'list medicine: ', listSelectedMedicine, 'appointmentId:', currentSelectedAppointment)
             onClosePatientModal()
+            fetchAppointment()
         }
     }
 
@@ -268,13 +300,10 @@ const DoctorServices = () => {
                                 <Calendar onChange={onChangeDate} value={dateCalendar} />
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-lg bg-green-700 border border-green-700 text-white px-3 py-1">7:00</div>
-                                <div className="p-3 rounded-lg bg-green-700 border border-green-700 text-white px-3 py-1">7:00</div>
-                                <div className="p-3 rounded-lg bg-green-700 border border-green-700 text-white px-3 py-1">7:00</div>
-                                <div className="p-3 rounded-lg bg-white border border-gray-700 text-black px-3 py-1">7:00</div>
-                                <div className="p-3 rounded-lg bg-white border border-gray-700 text-black px-3 py-1">7:00</div>
-                                <div className="p-3 rounded-lg bg-white border border-gray-700 text-black px-3 py-1">7:00</div>
-                                <div className="p-3 rounded-lg bg-white border border-gray-700 text-black px-3 py-1">7:00</div>
+                                {dataTimeByDate?.length > 0 && dataTimeByDate?.map((item) => (
+                                    <div key={item._id} className="p-3 rounded-lg bg-green-700 border border-green-700 text-white px-3 py-1">{item?.label}</div>
+                                ))}
+                                {/* <div className="p-3 rounded-lg bg-white border border-gray-700 text-black px-3 py-1">7:00</div> */}
                             </div>
                         </div>
                         <div className="bg-white shadow-lg border p-3 gap-3 rounded-md flex flex-col whitespace-nowrap overflow-x-auto">
@@ -303,8 +332,8 @@ const DoctorServices = () => {
                                 </div>
 
                                 {/* patient needs appointment */}
-                                {dataPatientWaitingList?.length > 0 &&
-                                    dataPatientWaitingList?.map((item, index) => (
+                                {dataPatientWaitingListByDate?.length > 0 &&
+                                    dataPatientWaitingListByDate?.map((item, index) => (
                                         <div key={index} onClick={() => { setOpenPatientModal(); setCurrentSelectedAppointment(item?.appointment?._id) }} className="p-3 rounded-lg flex flex-col gap-3 text-black bg-white shadow-md line-clamp-1 border border-green-500 shadow-green-800">
                                             <div className="flex gap-3 items-center">
                                                 <div className='basis-1/6'>
@@ -323,7 +352,7 @@ const DoctorServices = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="text-green-600 text-lg font-smibold">Appointment at <span className='font-bold'>{item?.appointment?.listSchedule?.map((item, index) => <div key={index}>{item?.date}-{item.scheduleTimes.map(item => item?.label)}</div>)}</span></div>
+                                            <div className="text-green-600 text-lg font-smibold">Appointment at <span className='font-bold'>{item?.appointment?.listSchedule?.map((item, index) => <div key={index}>{item?.date === selectedDate ? item?.date + ' ' : ''}<span className='text-blue-700'>{item.scheduleTimes.map(item => (dataTimeByDate.some(itemTime => itemTime._id === item._id) ? item.label + ' ' : ''))}</span> </div>)}</span></div>
                                         </div>
                                     ))
                                 }
