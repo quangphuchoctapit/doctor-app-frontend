@@ -9,6 +9,7 @@ const CartSchema = new Schema({
         quantity: { type: Number },
         medicine: [{
             brandOwner: { type: String },
+            available: {type: Number},
             description: { type: String },
             usage: { type: String },
             originCountry: { type: String },

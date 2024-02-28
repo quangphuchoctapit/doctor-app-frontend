@@ -1,5 +1,5 @@
 import { connectToDB } from "../../../../../utils/database"
-import Cart from "../../../../models/cart"
+import Cart from "../../../../models/Cart"
 
 
 // get cart with userid

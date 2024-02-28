@@ -64,9 +64,19 @@ export const userSlice = createSlice({
                     balance: state.value.balance + ammount
                 }
             };
+        },
+        withdraw: (state, action: PayloadAction<{ ammount: number }>) => {
+            const { ammount } = action.payload;
+            return {
+                ...state,
+                value: {
+                    ...state.value,
+                    balance: state.value.balance - ammount
+                }
+            };
         }
     }
 })
 
-export const { loggedIn, editImage, deposit } = userSlice.actions
+export const { loggedIn, editImage, deposit, withdraw } = userSlice.actions
 export default userSlice.reducer
